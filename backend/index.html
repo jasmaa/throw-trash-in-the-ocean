@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+    <h1>Hello World!</h1>
+    <div id="future"></div>
+    <form id="form" id="chat_form">
+        <input id="chat_input" type="text">
+        <input type="submit" value="Send">
+    </form>
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io.connect('http://localhost:3000');
+        socket.on('connect', data => {
+            socket.emit('join', 'Hello from client');
+        });
+
+        $('form').submit(e => {
+            e.preventDefault();
+            const message = $('#chat_input').val();
+            socket.emit('messages', message);
+        });
+    </script>
+
+</body>
+
+</html>
