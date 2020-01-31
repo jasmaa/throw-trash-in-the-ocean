@@ -25,6 +25,8 @@ io.on('connection', client => {
 
     client.on('messages', data => {
         console.log('message: ' + data);
+        client.emit('broad', data);
+        client.broadcast.emit('broad', data);
     })
 });
 
