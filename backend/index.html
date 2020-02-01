@@ -2,35 +2,38 @@
 <html lang="en">
 
 <head>
+    <title>Throw Trash in the Ocean</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
 </head>
 
 <body>
-    <h1>Hello World!</h1>
-    <div id="future"></div>
-    <form id="form" id="chat_form">
-        <input id="chat_input" type="text">
-        <input type="submit" value="Send">
-    </form>
-    <script src="/jquery/dist/jquery.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+
+    <div id="pollute-btn" class="btn btn-primary">Press Me!</div>
+    <div id="world-stat"></div>
 
     <script>
+
         const socket = io.connect('http://localhost:3000');
+        const polluteBtn = document.getElementById('pollute-btn');
+        const worldStat = document.getElementById('world-stat');
 
         socket.on('connect', data => {
-            socket.emit('join', 'Hello from client');
+            socket.emit('join', {
+                player_id: '12345',
+            });
         });
 
-        socket.on('broad', data => {
-            console.log(data);
+        socket.on('sync', data => {
+            worldStat.innerHTML = data.health;
         });
 
-        $('form').submit(e => {
-            e.preventDefault();
-            const message = $('#chat_input').val();
-            socket.emit('messages', message);
+        polluteBtn.addEventListener('click', e => {
+            socket.emit('pollute');
         });
+
     </script>
 
 </body>
