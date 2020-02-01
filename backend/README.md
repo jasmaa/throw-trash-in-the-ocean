@@ -4,4 +4,4 @@ WebSocket backend
 
 ## Setup
     yarn install
-    node .
+    node .\server.js

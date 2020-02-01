@@ -16,6 +16,8 @@
 
     <script>
 
+        const roomID = window.location.pathname.split("/")[2]; //temp
+
         const socket = io.connect('http://localhost:3000');
         const polluteBtn = document.getElementById('pollute-btn');
         const worldStat = document.getElementById('world-stat');
@@ -23,15 +25,17 @@
         socket.on('connect', data => {
             socket.emit('join', {
                 player_id: '12345',
+                room_id: roomID,
             });
         });
 
         socket.on('sync', data => {
+            console.log("sync");
             worldStat.innerHTML = data.health;
         });
 
         polluteBtn.addEventListener('click', e => {
-            socket.emit('pollute');
+            socket.emit('pollute', {room_id: roomID});
         });
 
     </script>
