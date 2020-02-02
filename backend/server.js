@@ -1,3 +1,5 @@
+// server.js
+// Main express app
 
 const express = require('express');
 const morgan = require('morgan');
@@ -13,8 +15,10 @@ app.use(morgan('tiny'))
 app.use(express.static(__dirname + '/node_modules'));
 
 // Routes
-app.get('/', (req, res) => {
-    res.send("i am the main page");
+app.get('/dataTest', (req, res) => {
+    res.json({
+        hi: 'hi',
+    });
 });
 
 app.get('/game/:roomName', (req, res) => {
@@ -76,4 +80,4 @@ io.on('connection', client => {
     });
 });
 
-server.listen(3000, () => console.log("Starting server on 3000..."));
+server.listen(3001, () => console.log("Starting server on 3001..."));

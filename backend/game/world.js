@@ -1,6 +1,11 @@
+// world.js
+// Room world
 
 const MAX_HEALTH = 100;
 
+/**
+ * Room world
+ */
 class World {
 
     constructor() {
