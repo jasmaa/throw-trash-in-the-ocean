@@ -8,7 +8,8 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const { World } = require('./game');
+const { World, Player } = require('./game');
+const pool = require('./config/dbConfig');
 
 // Middlware
 app.use(morgan('tiny'))
@@ -30,33 +31,51 @@ app.get('/game/:roomName', (req, res) => {
 // Game
 let activeRooms = new Set();
 let worlds = {};
+let players = {}; // TODO: Replace with db connection??
 
-// Update rooms
+// Peridoically update rooms and save to db
 setInterval(() => {
-    for (roomID of activeRooms) {
+    for (roomName of activeRooms) {
+        const room = io.sockets.adapter.rooms[roomName];
+        const world = worlds[roomName];
 
-        const room = io.sockets.adapter.rooms[roomID];
+        if (room == undefined) continue;
 
-        // Skip undefined
-        if(room == undefined){
-            continue;
+        // Remove inactive room
+        if (room.length <= 0) {
+            activeRooms.delete(roomName);
         }
 
-        if(room <= 0){
-            // Remove inactive room
-            activeRooms.delete(roomID);
+        // Update or init room
+        if (world) {
+            world.recover(1);
 
+            // Save to db
+            pool.query(
+                `UPDATE rooms SET pollution_level=$2, is_dead=$3 WHERE room_name=$1`,
+                [roomName, world.pollutionLevel, world.isDead],
+            )
+                .catch(err => console.err(err));
+
+            io.in(roomName).emit('sync', world.getStat());
         } else {
-
-            const world = worlds[roomID];
-
-            if (world) {
-                world.recover(1);
-                io.in(roomID).emit('sync', world.getStat());
-            } else {
-                worlds[roomID] = new World();
-                // TODO: reinit here from db
-            }
+            pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [roomName])
+                .then(res => {
+                    if (res.rowCount <= 0) {
+                        return pool.query(
+                            `INSERT INTO rooms (room_name, pollution_level, is_dead) VALUES ($1, $2, $3)`,
+                            [roomName, 0, false],
+                        );
+                    } else {
+                        const worldData = res.rows[0];
+                        worlds[roomName] = new World(
+                            worldData['room_name'],
+                            worldData['pollution_level'],
+                            worldData['is_dead'],
+                        );
+                    }
+                })
+                .catch(err => console.err(err));
         }
     }
 }, 1000);
@@ -65,18 +84,27 @@ io.on('connection', client => {
 
     client.on('join', data => {
 
-        const roomID = data['room_id'];
-        activeRooms.add(roomID);
-        client.join(roomID);
+        const roomName = data['room_name'];
+        const playerID = data['player_id'];
+
+        activeRooms.add(roomName);
+        client.join(roomName);
+
+        // Add user
+        // TODO: Replace with db retrieval
+        players[playerID] = new Player(client, playerID);
     });
 
     client.on('pollute', data => {
-        
-        const roomID = data['room_id'];
-        const world = worlds[roomID];
+
+        const roomName = data['room_name'];
+        const playerID = data['player_id'];
+
+        const world = worlds[roomName];
 
         world.pollute(1);
-        io.in(roomID).emit('sync', world.getStat());
+        players[playerID].gainProfit(1);
+        io.in(roomName).emit('sync', world.getStat());
     });
 });
 

@@ -13,9 +13,11 @@
     - pollution_threshold
     - is_dead
 
-  - player
+  - player: single agent in a room
     - player_id
-    - name
+
+  - user: user info across rooms
+    - user_handle
 
   - event
     - event_type

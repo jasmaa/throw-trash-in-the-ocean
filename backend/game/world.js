@@ -8,26 +8,26 @@ const MAX_HEALTH = 100;
  */
 class World {
 
-    constructor() {
-        this.health = MAX_HEALTH;
+    constructor(roomName, pollutionLevel, isDead) {
+        this.roomName = roomName
+        this.pollutionLevel = pollutionLevel;
+        this.isDead = isDead;
     }
 
     pollute(n) {
-        this.health -= n;
+        this.pollutionLevel += n;
     }
 
     recover(n){
-        this.health += n;
-        this.health = Math.min(this.health, MAX_HEALTH);
+        this.pollutionLevel -= 1*n;
+        this.pollutionLevel = Math.max(this.pollutionLevel, 0);
     }
 
     getStat(){
         return {
-            health: this.health,
+            health: MAX_HEALTH - this.pollutionLevel,
         }
     }
 }
 
-module.exports = {
-    World, World,
-}
+module.exports = World;
