@@ -33,7 +33,7 @@ let activeRooms = new Set();
 let worlds = {};
 let players = {}; // TODO: Replace with db connection??
 
-// Peridoically update rooms and save to db
+// Periodically update and save rooms
 setInterval(() => {
     for (roomName of activeRooms) {
         const room = io.sockets.adapter.rooms[roomName];
@@ -48,34 +48,14 @@ setInterval(() => {
 
         // Update or init room
         if (world) {
-            world.recover(1);
-
-            // Save to db
-            pool.query(
-                `UPDATE rooms SET pollution_level=$2, is_dead=$3 WHERE room_name=$1`,
-                [roomName, world.pollutionLevel, world.isDead],
-            )
-                .catch(err => console.err(err));
-
+            world.update();
+            world.save(pool);
+            
             io.in(roomName).emit('sync', world.getStat());
         } else {
-            pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [roomName])
-                .then(res => {
-                    if (res.rowCount <= 0) {
-                        return pool.query(
-                            `INSERT INTO rooms (room_name, pollution_level, is_dead) VALUES ($1, $2, $3)`,
-                            [roomName, 0, false],
-                        );
-                    } else {
-                        const worldData = res.rows[0];
-                        worlds[roomName] = new World(
-                            worldData['room_name'],
-                            worldData['pollution_level'],
-                            worldData['is_dead'],
-                        );
-                    }
-                })
-                .catch(err => console.err(err));
+            newWorld = new World(roomName);
+            newWorld.readOrCreate(pool);
+            worlds[roomName] = newWorld;
         }
     }
 }, 1000);
