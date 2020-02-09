@@ -17,8 +17,26 @@
 
     <script>
 
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return null;
+        }
+
         const roomName = window.location.pathname.split("/")[2]; //temp
-        let userID = null; // temp
+        let userID;
+        // Get user id from cookie
+        userID = getCookie('user_id');
 
         const socket = io.connect('http://localhost:3001');
         const polluteBtn = document.getElementById('pollute-btn');
@@ -39,6 +57,7 @@
         socket.on('join', data => {
             console.log(`Joined ${data['user_id']}!`);
             userID = data['user_id'];
+            document.cookie = `user_id=${userID}`;
         });
 
         socket.on('pollute', data => {

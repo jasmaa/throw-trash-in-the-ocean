@@ -66,22 +66,23 @@ io.on('connection', client => {
 
         const roomName = data['room_name'];
         let userID = data['user_id'];
+        let world = worlds[roomName];
 
         client.join(roomName);
 
         // Add room
         activeRooms.add(roomName);
-        if (!worlds[roomName]) {
-            newWorld = new World(roomName);
-            await newWorld.readOrCreate(pool);
-            worlds[roomName] = newWorld;
+        if (!world) {
+            world = new World(roomName);
+            await world.readOrCreate(pool);
+            worlds[roomName] = world;
         }
 
         // Add user
         let res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
         if (res.rowCount <= 0) {
             userID = getRandomValue(30);
-            const userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user id here
+            const userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user handle here
 
             await pool.query(
                 `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
@@ -90,11 +91,10 @@ io.on('connection', client => {
         }
 
         // Add player
-        res = await pool.query(`SELECT * FROM players
-        JOIN users ON users.user_id=players.user_id
-        JOIN rooms on rooms.room_id=players.room_id
-        WHERE users.user_id=$1`, [userID]);
-
+        res = await pool.query(
+            `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
+            [userID, world.roomID],
+        );
         if (res.rowCount <= 0) {
             await pool.query(
                 `INSERT INTO players (user_id, room_id, profit) VALUES ($1, $2, $3)`,
@@ -112,7 +112,6 @@ io.on('connection', client => {
 
         const roomName = data['room_name'];
         const userID = data['user_id'];
-
         const world = worlds[roomName];
 
         // Update world
@@ -121,14 +120,14 @@ io.on('connection', client => {
 
         // Update player
         let res = await pool.query(
-            `SELECT * FROM players WHERE user_id=$1`,
-            [userID],
+            `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
+            [userID, world.roomID],
         );
 
         const currProfit = res.rows[0]['profit'] + 1;
         await pool.query(
-            `UPDATE players SET profit=$2 WHERE user_id=$1`,
-            [userID, currProfit],
+            `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
+            [userID, world.roomID, currProfit],
         );
 
         // Update client
