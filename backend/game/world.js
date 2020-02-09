@@ -9,7 +9,8 @@ const MAX_HEALTH = 100;
 class World {
 
     constructor(roomName) {
-        this.roomName = roomName
+        this.roomName = roomName;
+        this.roomID = null;
         this.pollutionLevel = 0;
         this.isDead = false;
     }
@@ -18,39 +19,40 @@ class World {
      * Saves world state to db
      * @param {Pool} pool DB connection 
      */
-    save(pool) {
-        pool.query(
+    async save(pool) {
+        await pool.query(
             `UPDATE rooms SET pollution_level=$2, is_dead=$3 WHERE room_name=$1`,
             [this.roomName, this.pollutionLevel, this.isDead],
-        )
-            .catch(err => console.err(err));
+        );
     }
 
     /**
      * Read world from db or create a new one
      * @param {Pool} pool DB connection
      */
-    readOrCreate(pool) {
-        pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName])
-            .then(res => {
-                if (res.rowCount <= 0) {
-                    return pool.query(
-                        `INSERT INTO rooms (room_name, pollution_level, is_dead) VALUES ($1, $2, $3)`,
-                        [roomName, 0, false],
-                    );
-                } else {
-                    const worldData = res.rows[0];
-                    this.pollutionLevel = worldData['pollution_level'];
-                    this.isDead = worldData['is_dead'];
-                }
-            })
-            .catch(err => console.err(err));
+    async readOrCreate(pool) {
+
+        let res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
+
+        // Create if doesn't exist
+        if (res.rowCount <= 0) {
+            await pool.query(
+                `INSERT INTO rooms (room_name, pollution_level, is_dead) VALUES ($1, $2, $3)`,
+                [this.roomName, 0, false],
+            );
+            res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
+        }
+
+        const worldData = res.rows[0];
+        this.roomID = worldData['room_id'];
+        this.pollutionLevel = worldData['pollution_level'];
+        this.isDead = worldData['is_dead'];
     }
 
     /**
      * Update world
      */
-    update(){
+    update() {
         this.recover(1);
     }
 

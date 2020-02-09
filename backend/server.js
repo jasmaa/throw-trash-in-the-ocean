@@ -9,6 +9,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const { World, Player } = require('./game');
+const { getRandomValue } = require('./utils');
 const pool = require('./config/dbConfig');
 
 // Middlware
@@ -34,7 +35,7 @@ let worlds = {};
 let players = {}; // TODO: Replace with db connection??
 
 // Periodically update and save rooms
-setInterval(() => {
+setInterval(async () => {
     for (roomName of activeRooms) {
         const room = io.sockets.adapter.rooms[roomName];
         const world = worlds[roomName];
@@ -49,12 +50,11 @@ setInterval(() => {
         // Update or init room
         if (world) {
             world.update();
-            world.save(pool);
-            
+            await world.save(pool);
             io.in(roomName).emit('sync', world.getStat());
         } else {
             newWorld = new World(roomName);
-            newWorld.readOrCreate(pool);
+            await newWorld.readOrCreate(pool);
             worlds[roomName] = newWorld;
         }
     }
@@ -62,28 +62,77 @@ setInterval(() => {
 
 io.on('connection', client => {
 
-    client.on('join', data => {
+    client.on('join', async data => {
 
         const roomName = data['room_name'];
-        const playerID = data['player_id'];
+        let userID = data['user_id'];
 
-        activeRooms.add(roomName);
         client.join(roomName);
 
+        // Add room
+        activeRooms.add(roomName);
+        if (!worlds[roomName]) {
+            newWorld = new World(roomName);
+            await newWorld.readOrCreate(pool);
+            worlds[roomName] = newWorld;
+        }
+
         // Add user
-        // TODO: Replace with db retrieval
-        players[playerID] = new Player(client, playerID);
+        let res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
+        if (res.rowCount <= 0) {
+            userID = getRandomValue(30);
+            const userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user id here
+
+            await pool.query(
+                `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
+                [userID, userHandle],
+            );
+        }
+
+        // Add player
+        res = await pool.query(`SELECT * FROM players
+        JOIN users ON users.user_id=players.user_id
+        JOIN rooms on rooms.room_id=players.room_id
+        WHERE users.user_id=$1`, [userID]);
+
+        if (res.rowCount <= 0) {
+            await pool.query(
+                `INSERT INTO players (user_id, room_id, profit) VALUES ($1, $2, $3)`,
+                [userID, worlds[roomName].roomID, 0],
+            )
+        }
+
+        // Update client
+        client.emit('join', {
+            user_id: userID,
+        });
     });
 
-    client.on('pollute', data => {
+    client.on('pollute', async data => {
 
         const roomName = data['room_name'];
-        const playerID = data['player_id'];
+        const userID = data['user_id'];
 
         const world = worlds[roomName];
 
+        // Update world
         world.pollute(1);
-        players[playerID].gainProfit(1);
+        await world.save(pool);
+
+        // Update player
+        let res = await pool.query(
+            `SELECT * FROM players WHERE user_id=$1`,
+            [userID],
+        );
+
+        const currProfit = res.rows[0]['profit'] + 1;
+        await pool.query(
+            `UPDATE players SET profit=$2 WHERE user_id=$1`,
+            [userID, currProfit],
+        );
+
+        // Update client
+        client.emit('pollute', { profit: currProfit });
         io.in(roomName).emit('sync', world.getStat());
     });
 });

@@ -13,30 +13,41 @@
 
     <div id="pollute-btn" class="btn btn-primary">Press Me!</div>
     <div id="world-stat"></div>
+    <div id="profit"></div>
 
     <script>
 
         const roomName = window.location.pathname.split("/")[2]; //temp
-        const playerID = '12345' // temp
+        let userID = null; // temp
 
         const socket = io.connect('http://localhost:3001');
         const polluteBtn = document.getElementById('pollute-btn');
-        const worldStat = document.getElementById('world-stat');
+        const worldStatLabel = document.getElementById('world-stat');
+        const profitLabel = document.getElementById('profit');
 
         socket.on('connect', data => {
             socket.emit('join', {
-                player_id: playerID,
+                user_id: userID,
                 room_name: roomName,
             });
         });
 
         socket.on('sync', data => {
-            worldStat.innerHTML = JSON.stringify(data);
+            worldStatLabel.innerHTML = JSON.stringify(data);
+        });
+
+        socket.on('join', data => {
+            console.log(`Joined ${data['user_id']}!`);
+            userID = data['user_id'];
+        });
+
+        socket.on('pollute', data => {
+            profitLabel.innerHTML = JSON.stringify(data);
         });
 
         polluteBtn.addEventListener('click', e => {
             socket.emit('pollute', {
-                player_id: playerID,
+                user_id: userID,
                 room_name: roomName,
             });
         });
