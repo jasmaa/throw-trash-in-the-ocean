@@ -8,9 +8,9 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const { World, Player } = require('./game');
-const { getRandomValue } = require('./utils');
-const pool = require('./config/dbConfig');
+const { World } = require('./src/game');
+const { getRandomValue } = require('./src/utils');
+const pool = require('./src/config/dbConfig');
 
 // Middlware
 app.use(morgan('tiny'))
@@ -29,10 +29,9 @@ app.get('/game/:roomName', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// Game
+// === Game ===
 let activeRooms = new Set();
 let worlds = {};
-let players = {}; // TODO: Replace with db connection??
 
 // Periodically update and save rooms
 setInterval(async () => {
@@ -106,7 +105,9 @@ io.on('connection', client => {
         client.emit('join', {
             user_id: userID,
         });
+        client.emit('sync', world.getStat());
     });
+
 
     client.on('pollute', async data => {
 
