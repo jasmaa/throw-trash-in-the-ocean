@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const MapScreen = () => {
+const MapPanel = () => {
 
   return (
     <div className="card">
@@ -13,4 +13,4 @@ const MapScreen = () => {
   );
 }
 
-export default MapScreen;
+export default MapPanel;
