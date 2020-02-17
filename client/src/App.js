@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+import ControlScreen from './components/ControlScreen';
+import MapScreen from './components/MapScreen';
+
+const App = () => {
 
   const [data, setData] = useState({});
 
+  /*
   // Fetch data on re-render
   async function fetchData() {
     const res = await fetch('/dataTest');
@@ -17,11 +21,18 @@ function App() {
   useEffect(() => {
     fetchData();
   });
+  */
 
   return (
-    <div className="App">
-      <h1>hi im a test</h1>
-      <p>{JSON.stringify(data)}</p>
+    <div className="container-fluid p-5">
+      <div className="row">
+        <div className="col-lg-8">
+          <MapScreen />
+        </div>
+        <div className="col-lg-4">
+          <ControlScreen />
+        </div>
+      </div>
     </div>
   );
 }
