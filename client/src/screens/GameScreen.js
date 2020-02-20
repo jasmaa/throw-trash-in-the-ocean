@@ -2,24 +2,17 @@ import React, { useState, useEffect } from 'react';
 
 import ControlPanel from '../components/ControlPanel';
 import MapPanel from '../components/MapPanel';
+import Client from '../networking/client'
+
+let client;
 
 const GameScreen = (props) => {
 
-    const [data, setData] = useState({});
+    const [syncData, setSyncData] = useState({});
 
-    /*
-    // Fetch data on re-render
-    async function fetchData() {
-      const res = await fetch('/dataTest');
-      res
-        .json()
-        .then(res => setData(res))
-        .catch(err => console.log(err));
-    }
     useEffect(() => {
-      fetchData();
-    });
-    */
+        client = new Client(props.roomName, setSyncData);
+    }, []);
 
     return (
         <div className="container-fluid p-5">
@@ -29,7 +22,10 @@ const GameScreen = (props) => {
                     <MapPanel />
                 </div>
                 <div className="col-lg-4">
-                    <ControlPanel />
+                    <ControlPanel
+                        polluteHandler={() => client.pollute()}
+                        syncData={syncData}
+                    />
                 </div>
             </div>
         </div>
