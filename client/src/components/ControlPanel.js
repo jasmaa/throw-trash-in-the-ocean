@@ -9,7 +9,7 @@ const ControlPanel = (props) => {
           
           <h3>Control Panel</h3>
           <center>
-            <button className="round-button m-5" onClick={props.polluteHandler}>HI</button>
+            <button className="round-button m-5" onClick={props.polluteHandler}>{props.syncData.profit}</button>
           </center>
 
           <h3>World Stats</h3>

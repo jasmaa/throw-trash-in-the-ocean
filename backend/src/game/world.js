@@ -53,7 +53,7 @@ class World {
      * Update world
      */
     update() {
-        this.recover(1);
+        this.recover(30);
     }
 
     /**

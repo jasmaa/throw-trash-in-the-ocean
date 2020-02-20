@@ -17,15 +17,9 @@ app.use(morgan('tiny'))
 app.use(express.static(__dirname + '/node_modules'));
 
 // Routes
-app.get('/dataTest', (req, res) => {
-    res.json({
-        hi: 'hi',
-    });
-});
 
+// TEMP: server testing
 app.get('/game/:roomName', (req, res) => {
-    // TODO: send room name to frontend here
-    // const roomName = req.params.roomName;
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -94,18 +88,23 @@ io.on('connection', client => {
             `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
             [userID, world.roomID],
         );
+
+        let currProfit = 0;
         if (res.rowCount <= 0) {
             await pool.query(
                 `INSERT INTO players (user_id, room_id, profit) VALUES ($1, $2, $3)`,
                 [userID, worlds[roomName].roomID, 0],
             )
-        }
+        } else {
+            currProfit = res.rows[0]['profit'];
+        } 
 
         // Update client
         client.emit('join', {
             user_id: userID,
         });
         client.emit('sync', world.getStat());
+        client.emit('pollute', { profit: currProfit });
     });
 
 

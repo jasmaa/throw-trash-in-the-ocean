@@ -11,7 +11,9 @@ const GameScreen = (props) => {
     const [syncData, setSyncData] = useState({});
 
     useEffect(() => {
-        client = new Client(props.roomName, setSyncData);
+        client = new Client(props.roomName, data => {
+            setSyncData(prevState => ({...prevState, ...data}));
+        });
     }, []);
 
     return (
