@@ -14,6 +14,7 @@
     <div id="pollute-btn" class="btn btn-primary">Press Me!</div>
     <div id="world-stat"></div>
     <div id="profit"></div>
+    <input id="user-handle"></input>
 
     <script>
 
@@ -42,6 +43,7 @@
         const polluteBtn = document.getElementById('pollute-btn');
         const worldStatLabel = document.getElementById('world-stat');
         const profitLabel = document.getElementById('profit');
+        const userHandleInput = document.getElementById('user-handle');
 
         socket.on('connect', data => {
             socket.emit('join', {
@@ -51,6 +53,7 @@
         });
 
         socket.on('sync', data => {
+            console.log('sync');
             worldStatLabel.innerHTML = JSON.stringify(data);
         });
 
@@ -58,6 +61,8 @@
             console.log(`Joined ${data['user_id']}!`);
             userID = data['user_id'];
             document.cookie = `user_id=${userID}`;
+
+            userHandleInput.value = data['user_handle'];
         });
 
         socket.on('pollute', data => {
@@ -68,6 +73,13 @@
             socket.emit('pollute', {
                 user_id: userID,
                 room_name: roomName,
+            });
+        });
+
+        userHandleInput.addEventListener('input', e => {
+            socket.emit('set_handle', {
+                user_id: userID,
+                user_handle: userHandleInput.value,
             });
         });
 

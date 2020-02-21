@@ -13,6 +13,7 @@ class World {
         this.roomID = null;
         this.pollutionLevel = 0;
         this.isDead = false;
+        this.players = {};
     }
 
     /**
@@ -79,6 +80,7 @@ class World {
     getStat() {
         return {
             health: MAX_HEALTH - this.pollutionLevel,
+            players: this.players,
         }
     }
 }

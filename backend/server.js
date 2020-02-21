@@ -23,7 +23,6 @@ app.get('/game/:roomName', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// === Game ===
 let activeRooms = new Set();
 let worlds = {};
 
@@ -53,6 +52,7 @@ setInterval(async () => {
     }
 }, 1000);
 
+// Socket handlers
 io.on('connection', client => {
 
     client.on('join', async data => {
@@ -73,14 +73,18 @@ io.on('connection', client => {
 
         // Add user
         let res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
+        let userHandle;
+
         if (res.rowCount <= 0) {
             userID = getRandomValue(30);
-            const userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user handle here
+            userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user handle here
 
             await pool.query(
                 `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
                 [userID, userHandle],
             );
+        } else {
+            userHandle = res.rows[0]['user_handle']
         }
 
         // Add player
@@ -88,8 +92,8 @@ io.on('connection', client => {
             `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
             [userID, world.roomID],
         );
-
         let currProfit = 0;
+
         if (res.rowCount <= 0) {
             await pool.query(
                 `INSERT INTO players (user_id, room_id, profit) VALUES ($1, $2, $3)`,
@@ -97,11 +101,19 @@ io.on('connection', client => {
             )
         } else {
             currProfit = res.rows[0]['profit'];
-        } 
+        }
+
+        // Update cache
+        world.players[userID] = {
+            userID: userID,
+            userHandle: userHandle,
+            profit: currProfit,
+        };
 
         // Update client
         client.emit('join', {
             user_id: userID,
+            user_handle: userHandle,
         });
         client.emit('sync', world.getStat());
         client.emit('pollute', { profit: currProfit });
@@ -130,8 +142,29 @@ io.on('connection', client => {
             [userID, world.roomID, currProfit],
         );
 
+        // Update cache
+        world.players[userID].profit = currProfit;
+
         // Update client
         client.emit('pollute', { profit: currProfit });
+        io.in(roomName).emit('sync', world.getStat());
+    });
+
+    client.on('set_handle', async data => {
+
+        const world = worlds[roomName];
+        let userID = data['user_id'];
+        let userHandle = data['user_handle'];
+
+        // Update user
+        await pool.query(
+            `UPDATE users SET user_handle=$2 WHERE user_id=$1`,
+            [userID, userHandle],
+        );
+
+        // Update cache
+        world.players[userID].userHandle = userHandle;
+        console.log(world.players)
         io.in(roomName).emit('sync', world.getStat());
     });
 });
