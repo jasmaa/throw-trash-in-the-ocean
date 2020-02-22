@@ -21,7 +21,8 @@ services:
             - "3000:3000" # Map for now
         links:
             - backend:backend
-        command: serve -s build -p 3000
+        #command: serve -s build -p 3000
+        command: npm start
     
     postgres:
         build: ./postgres

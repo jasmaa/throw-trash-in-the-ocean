@@ -45,7 +45,9 @@ export default class Client {
         });
 
         this.socket.on('join', data => {
+
             console.log(`Joined ${data['user_id']}!`);
+            
             this.userID = data['user_id'];
             document.cookie = `user_id=${this.userID}`;
         });

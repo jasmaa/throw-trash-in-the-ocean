@@ -166,7 +166,6 @@ io.on('connection', client => {
 
         // Update cache
         world.players[userID].userHandle = userHandle;
-        console.log(world.players)
         io.in(roomName).emit('sync', world.getStat());
     });
 });

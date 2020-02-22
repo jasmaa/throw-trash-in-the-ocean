@@ -12,7 +12,7 @@ const GameScreen = (props) => {
 
     useEffect(() => {
         client = new Client(props.roomName, data => {
-            setSyncData(prevState => ({...prevState, ...data}));
+            setSyncData(prevState => ({ ...prevState, ...data }));
         });
     }, []);
 
@@ -21,11 +21,14 @@ const GameScreen = (props) => {
             <h1 className="m-3">{props.roomName}</h1>
             <div className="row">
                 <div className="col-lg-8">
-                    <MapPanel />
+                    <MapPanel
+                        syncData={syncData}
+                    />
                 </div>
                 <div className="col-lg-4">
                     <ControlPanel
                         polluteHandler={() => client.pollute()}
+                        userID={client == undefined ? '' : client.userID}
                         syncData={syncData}
                     />
                 </div>
