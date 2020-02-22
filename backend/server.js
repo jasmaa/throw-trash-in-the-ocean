@@ -3,6 +3,7 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const app = express();
 const server = require('http').createServer(app);
@@ -13,8 +14,9 @@ const { getRandomValue } = require('./src/utils');
 const pool = require('./src/config/dbConfig');
 
 // Middlware
-app.use(morgan('tiny'))
+app.use(morgan('tiny'));
 app.use(express.static(__dirname + '/node_modules'));
+app.use(cors());
 
 // Routes
 

@@ -27,7 +27,8 @@ export default class Client {
 
     constructor(roomName, updateHandler) {
 
-        this.socket = io.connect('http://localhost:3001'); // change this in production
+        const baseURL = '192.168.99.101';
+        this.socket = io.connect(`http://${baseURL}:3001`); // change this in production
         this.roomName = roomName;
         this.userID = getCookie('user_id');
         this.updateHandler = updateHandler;

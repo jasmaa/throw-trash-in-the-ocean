@@ -4,8 +4,6 @@ WIP multiplayer ocean trashing simulation
 
 Made for my DCC capstone
 
-# Setup
+# Setup and Run
 
-    # Run server then client
-	node ./backend/server.js
-	cd client && yarn start
+	docker-compose up --build

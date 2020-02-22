@@ -34,12 +34,13 @@
             return null;
         }
 
+        const baseURL = '192.168.99.101';
         const roomName = window.location.pathname.split("/")[2]; //temp
         let userID;
         // Get user id from cookie
         userID = getCookie('user_id');
 
-        const socket = io.connect('http://localhost:3001');
+        const socket = io.connect(`http://${baseURL}:3001`);
         const polluteBtn = document.getElementById('pollute-btn');
         const worldStatLabel = document.getElementById('world-stat');
         const profitLabel = document.getElementById('profit');
