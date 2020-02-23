@@ -59,6 +59,8 @@ io.on('connection', client => {
 
     client.on('join', async data => {
 
+        // TODO: validate room name here
+
         const roomName = data['room_name'];
         let userID = data['user_id'];
         let world = worlds[roomName];

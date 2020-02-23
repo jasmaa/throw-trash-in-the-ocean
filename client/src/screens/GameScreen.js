@@ -18,7 +18,6 @@ const GameScreen = (props) => {
 
     return (
         <div className="container-fluid p-5">
-            <h1 className="m-3">{props.roomName}</h1>
             <div className="row">
                 <div className="col-lg-8">
                     <MapPanel
@@ -27,9 +26,12 @@ const GameScreen = (props) => {
                 </div>
                 <div className="col-lg-4">
                     <ControlPanel
-                        polluteHandler={() => client.pollute()}
                         userID={client == undefined ? '' : client.userID}
+                        roomName={props.roomName}
                         syncData={syncData}
+
+                        polluteHandler={() => client.pollute()}
+                        setUserHandleHandler={e => client.setUserHandle(e.target.value)}
                     />
                 </div>
             </div>

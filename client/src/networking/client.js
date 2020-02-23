@@ -27,7 +27,7 @@ export default class Client {
 
     constructor(roomName, updateHandler) {
 
-        const baseURL = '192.168.99.101';
+        const baseURL = 'localhost'; //'192.168.99.101';
         this.socket = io.connect(`http://${baseURL}:3001`); // change this in production
         this.roomName = roomName;
         this.userID = getCookie('user_id');
@@ -47,7 +47,7 @@ export default class Client {
         this.socket.on('join', data => {
 
             console.log(`Joined ${data['user_id']}!`);
-            
+
             this.userID = data['user_id'];
             document.cookie = `user_id=${this.userID}`;
         });
@@ -61,6 +61,13 @@ export default class Client {
         this.socket.emit('pollute', {
             user_id: this.userID,
             room_name: this.roomName,
+        });
+    }
+
+    setUserHandle(userHandle) {
+        this.socket.emit('set_handle', {
+            user_id: this.userID,
+            user_handle: userHandle,
         });
     }
 }

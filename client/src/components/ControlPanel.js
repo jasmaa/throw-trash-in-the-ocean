@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Scoreboard from './Scoreboard';
+
 const ControlPanel = (props) => {
 
   const userHandle =
@@ -7,46 +9,26 @@ const ControlPanel = (props) => {
       ? 'none'
       : props.syncData.players[props.userID].userHandle;
 
-  const renderPlayers = () => {
-    
-    let playerEntries = [];
-    for (const userID in props.syncData.players) {
-      const player = props.syncData.players[userID];
-      playerEntries.push(
-        <tbody>
-          <tr>
-            <td>{player.userHandle}</td>
-            <td>{player.profit}</td>
-          </tr>
-        </tbody>
-      );
-    }
-
-    return (
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Handle</th>
-            <th scope="col">Points</th>
-          </tr>
-        </thead>
-        {playerEntries}
-      </table >
-    );
-  }
-
   return (
     <div className="card">
       <div className="card-body">
         <div className="d-flex flex-column">
 
-          <h3>{userHandle}</h3>
+          <h3>Room: {props.roomName}</h3>
+
           <center>
             <button className="round-button m-5" onClick={props.polluteHandler}>{props.syncData.profit}</button>
           </center>
 
+          <input
+            type="text"
+            className="form-control"
+            value={userHandle}
+            onChange={props.setUserHandleHandler}
+          />
+
           <h3>Players</h3>
-          {renderPlayers()}
+          <Scoreboard players={props.syncData.players} />
 
         </div>
       </div>
