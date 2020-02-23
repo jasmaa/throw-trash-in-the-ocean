@@ -1,0 +1,3 @@
+python-socketio
+psychopg2
+python-dotenv

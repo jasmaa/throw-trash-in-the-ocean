@@ -139,18 +139,20 @@ io.on('connection', client => {
             [userID, world.roomID],
         );
 
-        const currProfit = res.rows[0]['profit'] + 1;
-        await pool.query(
-            `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
-            [userID, world.roomID, currProfit],
-        );
+        if (res.rowCount > 0) {
+            const currProfit = res.rows[0]['profit'] + 1;
+            await pool.query(
+                `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
+                [userID, world.roomID, currProfit],
+            );
 
-        // Update cache
-        world.players[userID].profit = currProfit;
+            // Update cache
+            world.players[userID].profit = currProfit;
 
-        // Update client
-        client.emit('pollute', { profit: currProfit });
-        io.in(roomName).emit('sync', world.getStat());
+            // Update client
+            client.emit('pollute', { profit: currProfit });
+            io.in(roomName).emit('sync', world.getStat());
+        }
     });
 
     client.on('set_handle', async data => {
