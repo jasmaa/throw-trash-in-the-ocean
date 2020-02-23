@@ -42,12 +42,27 @@ class World {
                 [this.roomName, 0, false],
             );
             res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
+
         }
 
         const worldData = res.rows[0];
         this.roomID = worldData['room_id'];
         this.pollutionLevel = worldData['pollution_level'];
         this.isDead = worldData['is_dead'];
+
+        // Init player cache
+        const playerRes = await pool.query(
+            `SELECT users.user_id, user_handle, profit FROM users
+                JOIN players ON users.user_id=players.user_id
+                WHERE room_id=$1`,
+            [this.roomID]
+        );
+        for (const player of playerRes.rows) {
+            this.players[player['user_id']] = {
+                userHandle: player['user_handle'],
+                profit: player['profit'],
+            }
+        }
     }
 
     /**

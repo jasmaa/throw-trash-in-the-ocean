@@ -109,7 +109,6 @@ io.on('connection', client => {
 
         // Update cache
         world.players[userID] = {
-            userID: userID,
             userHandle: userHandle,
             profit: currProfit,
         };
