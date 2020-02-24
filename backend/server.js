@@ -25,8 +25,11 @@ app.get('/game/:roomName', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-let activeRooms = new Set();
-let worlds = {};
+// Game
+
+const THROTTLE_TIME = 100;
+const activeRooms = new Set();
+const worlds = {};
 
 // Periodically update and save rooms
 setInterval(async () => {
@@ -129,10 +132,6 @@ io.on('connection', client => {
         const userID = data['user_id'];
         const world = worlds[roomName];
 
-        // Update world
-        world.pollute(1);
-        await world.save(pool);
-
         // Update player
         let res = await pool.query(
             `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
@@ -140,6 +139,19 @@ io.on('connection', client => {
         );
 
         if (res.rowCount > 0) {
+            // Check throttle
+            const now = new Date();
+            const timeBetween = now - world.players[userID].lastActionTime;
+            if (timeBetween < THROTTLE_TIME) {
+                return;
+            } else {
+                world.players[userID].lastActionTime = now;
+            }
+
+            // Update world
+            world.pollute(1);
+            await world.save(pool);
+
             const currProfit = res.rows[0]['profit'] + 1;
             await pool.query(
                 `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
@@ -161,15 +173,18 @@ io.on('connection', client => {
         let userID = data['user_id'];
         let userHandle = data['user_handle'];
 
-        // Update user
-        await pool.query(
-            `UPDATE users SET user_handle=$2 WHERE user_id=$1`,
-            [userID, userHandle],
-        );
+        if (userHandle.length <= 30) {
 
-        // Update cache
-        world.players[userID].userHandle = userHandle;
-        io.in(roomName).emit('sync', world.getStat());
+            // Update user
+            await pool.query(
+                `UPDATE users SET user_handle=$2 WHERE user_id=$1`,
+                [userID, userHandle],
+            );
+
+            // Update cache
+            world.players[userID].userHandle = userHandle;
+            io.in(roomName).emit('sync', world.getStat());
+        }
     });
 });
 

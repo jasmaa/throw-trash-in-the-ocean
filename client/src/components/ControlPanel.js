@@ -23,6 +23,7 @@ const ControlPanel = (props) => {
           <input
             type="text"
             className="form-control"
+            maxLength="30"
             value={userHandle}
             onChange={props.setUserHandleHandler}
           />

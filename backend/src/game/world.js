@@ -61,6 +61,7 @@ class World {
             this.players[player['user_id']] = {
                 userHandle: player['user_handle'],
                 profit: player['profit'],
+                lastActionTime: 0,
             }
         }
     }
