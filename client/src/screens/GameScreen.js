@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 import ControlPanel from '../components/ControlPanel';
 import MapPanel from '../components/MapPanel';
-import Client from '../networking/client'
+import Client from '../game/client'
+
+const perlin = require('perlin-noise');
 
 let client;
+let noise;
+const mapSize = 512;
 
 const GameScreen = (props) => {
 
@@ -14,6 +18,11 @@ const GameScreen = (props) => {
         client = new Client(props.roomName, data => {
             setSyncData(prevState => ({ ...prevState, ...data }));
         });
+
+        noise = perlin.generatePerlinNoise(mapSize, mapSize, {
+            octaveCount: 7,
+            persistence: 0.4,
+        });
     }, []);
 
     return (
@@ -22,6 +31,8 @@ const GameScreen = (props) => {
                 <div className="col-lg-8">
                     <MapPanel
                         syncData={syncData}
+                        noise={noise}
+                        mapSize={mapSize}
                     />
                 </div>
                 <div className="col-lg-4">

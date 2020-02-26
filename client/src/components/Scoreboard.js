@@ -6,7 +6,7 @@ const ControlPanel = (props) => {
     for (const userID in props.players) {
         const player = props.players[userID];
         playerEntries.push(
-            <tbody>
+            <tbody key={userID}>
                 <tr>
                     <td>{player.userHandle}</td>
                     <td>{player.profit}</td>
@@ -16,7 +16,7 @@ const ControlPanel = (props) => {
     }
 
     return (
-        <table class="table">
+        <table className="table">
             <thead>
                 <tr>
                     <th scope="col">Handle</th>

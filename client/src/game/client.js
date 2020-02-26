@@ -1,24 +1,6 @@
 import io from 'socket.io-client/dist/socket.io';
 
-/**
- * Gets cookie
- * @param {*} cname 
- */
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return null;
-}
+import { getCookie } from '../utils';
 
 /**
  * Socket client wrapper
@@ -28,7 +10,7 @@ export default class Client {
     constructor(roomName, updateHandler) {
 
         const baseURL = 'localhost'; //'192.168.99.101';
-        this.socket = io.connect(`http://${baseURL}:3001`); // change this in production
+        this.socket = io.connect(`http://${baseURL}:3001`);
         this.roomName = roomName;
         this.userID = getCookie('user_id');
         this.updateHandler = updateHandler;
