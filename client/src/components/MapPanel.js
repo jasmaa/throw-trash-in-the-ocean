@@ -1,20 +1,25 @@
 import React, { useRef } from 'react';
 
+/**
+ * Paint noise as map
+ * @param {*} ctx 
+ * @param {*} size 
+ * @param {*} noise 
+ */
 const paintMap = (ctx, size, noise) => {
   const imgData = ctx.getImageData(0, 0, size, size);
   const buffer = imgData.data;
 
   const setValue = (r, c, v) => {
-
-    if (v > 230) {
+    if (v > 200) {
       buffer[size * 4 * r + 4 * c + 0] = 255;
       buffer[size * 4 * r + 4 * c + 1] = 255;
       buffer[size * 4 * r + 4 * c + 2] = 255;
-    } else if (v > 180) {
+    } else if (v > 130) {
       buffer[size * 4 * r + 4 * c + 0] = 100;
       buffer[size * 4 * r + 4 * c + 1] = 100;
       buffer[size * 4 * r + 4 * c + 2] = 100;
-    } else if (v > 150) {
+    } else if (v > 80) {
       buffer[size * 4 * r + 4 * c + 0] = 0;
       buffer[size * 4 * r + 4 * c + 1] = 255;
       buffer[size * 4 * r + 4 * c + 2] = 0;
