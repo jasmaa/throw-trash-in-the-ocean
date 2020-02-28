@@ -1,14 +1,5 @@
 import React, { useRef } from 'react';
 
-function hexToRgb(hex) {
-  var result = /^#?([a-fA-F\d]{2})([a-fA-F\d]{2})([a-fA-F\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16),
-  } : null;
-}
-
 /**
  * Paint noise as map
  * @param {*} ctx 
@@ -19,8 +10,8 @@ const paintMap = (ctx, size, noise) => {
   const imgData = ctx.getImageData(0, 0, size, size);
   const buffer = imgData.data;
 
-  const setValue = (r, c, v) => {
-    const { r: red, g: grn, b: blu } = hexToRgb(v);
+  const setValue = (r, c, rgb) => {
+    const [red, grn, blu] = rgb;
     buffer[size * 4 * r + 4 * c + 0] = red;
     buffer[size * 4 * r + 4 * c + 1] = grn;
     buffer[size * 4 * r + 4 * c + 2] = blu;
@@ -31,13 +22,13 @@ const paintMap = (ctx, size, noise) => {
     for (let j = 0; j < size; j++) {
       const v = Math.floor(256 * noise[size * i + j]);
       if (v > 200) {
-        setValue(i, j, '#FFFFFF');
+        setValue(i, j, [0xFF, 0xFF, 0xFF]);
       } else if (v > 150) {
-        setValue(i, j, '#999999');
+        setValue(i, j, [0x99, 0x99, 0x99]);
       } else if (v > 100) {
-        setValue(i, j, '#00FF00');
+        setValue(i, j, [0x00, 0xFF, 0x00]);
       } else {
-        setValue(i, j, '#0000FF');
+        setValue(i, j, [0x00, 0x00, 0xFF]);
       }
     }
   }
