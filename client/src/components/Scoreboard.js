@@ -2,11 +2,15 @@ import React from 'react';
 
 const ControlPanel = (props) => {
 
+    if (props.players == undefined) return (<div></div>);
+
     let playerEntries = [];
-    for (const userID in props.players) {
-        const player = props.players[userID];
+    const scoreboard = Object.values(props.players);
+    scoreboard.sort((p1, p2) => p2.profit - p1.profit);
+
+    for (const player of scoreboard.slice(0, 5)) {
         playerEntries.push(
-            <tbody key={userID}>
+            <tbody key={player.userHandle}>
                 <tr>
                     <td>{player.userHandle}</td>
                     <td>{player.profit}</td>

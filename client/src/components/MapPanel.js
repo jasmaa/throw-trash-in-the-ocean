@@ -1,5 +1,14 @@
 import React, { useRef } from 'react';
 
+function hexToRgb(hex) {
+  var result = /^#?([a-fA-F\d]{2})([a-fA-F\d]{2})([a-fA-F\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+  } : null;
+}
+
 /**
  * Paint noise as map
  * @param {*} ctx 
@@ -11,30 +20,25 @@ const paintMap = (ctx, size, noise) => {
   const buffer = imgData.data;
 
   const setValue = (r, c, v) => {
-    if (v > 200) {
-      buffer[size * 4 * r + 4 * c + 0] = 255;
-      buffer[size * 4 * r + 4 * c + 1] = 255;
-      buffer[size * 4 * r + 4 * c + 2] = 255;
-    } else if (v > 130) {
-      buffer[size * 4 * r + 4 * c + 0] = 100;
-      buffer[size * 4 * r + 4 * c + 1] = 100;
-      buffer[size * 4 * r + 4 * c + 2] = 100;
-    } else if (v > 80) {
-      buffer[size * 4 * r + 4 * c + 0] = 0;
-      buffer[size * 4 * r + 4 * c + 1] = 255;
-      buffer[size * 4 * r + 4 * c + 2] = 0;
-    } else {
-      buffer[size * 4 * r + 4 * c + 0] = 0;
-      buffer[size * 4 * r + 4 * c + 1] = 0;
-      buffer[size * 4 * r + 4 * c + 2] = 255;
-    }
-
+    const { r: red, g: grn, b: blu } = hexToRgb(v);
+    buffer[size * 4 * r + 4 * c + 0] = red;
+    buffer[size * 4 * r + 4 * c + 1] = grn;
+    buffer[size * 4 * r + 4 * c + 2] = blu;
     buffer[size * 4 * r + 4 * c + 3] = 255;
   }
 
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
-      setValue(i, j, Math.floor(256 * noise[size * i + j]));
+      const v = Math.floor(256 * noise[size * i + j]);
+      if (v > 200) {
+        setValue(i, j, '#FFFFFF');
+      } else if (v > 150) {
+        setValue(i, j, '#999999');
+      } else if (v > 100) {
+        setValue(i, j, '#00FF00');
+      } else {
+        setValue(i, j, '#0000FF');
+      }
     }
   }
 
@@ -59,11 +63,17 @@ const MapPanel = (props) => {
         </div>
         <div className="d-flex flex-column justify-content-center align-items-center">
           <canvas
+            className="m-3"
             ref={canvasRef}
             width={props.mapSize}
             height={props.mapSize}
           />
         </div>
+
+        <ul className="list-group">
+          <li className="list-group-item">An FOE has appeared!</li>
+        </ul>
+
       </div>
     </div>
   );

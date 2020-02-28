@@ -1,4 +1,5 @@
 import socketio
+import threading
 
 def spawn_bot():
     
@@ -7,7 +8,6 @@ def spawn_bot():
 
     @sio.on('connect')
     def socket_connected():
-        print("Connected!")
         sio.emit('join', {
             'user_id': user_id,
             'room_name': 'hi',
@@ -17,8 +17,7 @@ def spawn_bot():
     def socket_join(msg):
         user_id = msg['user_id']
 
-        for i in range(100):
-            print(i)
+        for _ in range(100):
             sio.emit('pollute', {
                 'user_id': user_id,
                 'room_name': 'hi',

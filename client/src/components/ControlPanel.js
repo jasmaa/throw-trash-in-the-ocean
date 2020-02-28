@@ -28,9 +28,7 @@ const ControlPanel = (props) => {
             onChange={props.setUserHandleHandler}
           />
 
-          <h3>Players</h3>
           <Scoreboard players={props.syncData.players} />
-
         </div>
       </div>
     </div>
