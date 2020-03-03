@@ -21,12 +21,15 @@ const paintMap = (ctx, size, noise) => {
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const v = Math.floor(256 * noise[size * i + j]);
+      
       if (v > 200) {
         setValue(i, j, [0xFF, 0xFF, 0xFF]);
-      } else if (v > 150) {
+      } else if (v > 170) {
         setValue(i, j, [0x99, 0x99, 0x99]);
-      } else if (v > 100) {
-        setValue(i, j, [0x00, 0xFF, 0x00]);
+      } else if (v > 140) {
+        setValue(i, j, [0x2c, 0xb0, 0x37]);
+      } else if (v > 130) {
+        setValue(i, j, [0xED, 0xC9, 0xAF]);
       } else {
         setValue(i, j, [0x00, 0x00, 0xFF]);
       }

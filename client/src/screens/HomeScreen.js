@@ -24,6 +24,7 @@ const HomeScreen = () => {
                             onKeyPress={e => {
                                 if (e.charCode == 13) window.location.href = `/${roomName}`;
                             }}
+                            autoFocus
                         />
                         <div className="input-group-append">
                             <a className="btn btn-success" type="button" href={`/${roomName}`}>Join</a>

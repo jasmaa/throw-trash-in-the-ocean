@@ -1,5 +1,5 @@
-// mapping.js
-// Map generation functions
+// diamondSquare.js
+// Map generation using diamond square algo
 
 /**
  * Diamond square noise generation

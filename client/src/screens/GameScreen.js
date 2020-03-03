@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ControlPanel from '../components/ControlPanel';
 import MapPanel from '../components/MapPanel';
 import Client from '../game/client';
-import { diamondSquare } from '../utils';
+import { generatePerlin } from '../utils';
 
 const crypto = require('crypto');
 let client;
@@ -20,7 +20,8 @@ const GameScreen = (props) => {
         });
 
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
-        noise = diamondSquare(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
+        //noise = diamondSquare(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
+        noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
     }, []);
 
     return (

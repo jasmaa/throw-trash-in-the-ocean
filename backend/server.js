@@ -13,20 +13,12 @@ const { World } = require('./src/game');
 const { getRandomValue } = require('./src/utils');
 const pool = require('./src/config/dbConfig');
 
-// Middlware
+// === Middlware ===
 app.use(morgan('tiny'));
 app.use(express.static(__dirname + '/node_modules'));
 app.use(cors());
 
-// Routes
-
-// TEMP: server testing
-app.get('/game/:roomName', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-// Game
-
+// === Game ===
 const THROTTLE_TIME = 100;
 const activeRooms = new Set();
 const worlds = {};
