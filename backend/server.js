@@ -114,6 +114,7 @@ io.on('connection', client => {
             user_handle: userHandle,
         });
         client.emit('sync', world.getStat());
+        client.emit('set_handle', { user_handle: userHandle });
         client.emit('pollute', { profit: currProfit });
     });
 
@@ -175,6 +176,7 @@ io.on('connection', client => {
 
             // Update cache
             world.players[userID].userHandle = userHandle;
+            client.emit('set_handle', { user_handle: userHandle });
             io.in(roomName).emit('sync', world.getStat());
         }
     });

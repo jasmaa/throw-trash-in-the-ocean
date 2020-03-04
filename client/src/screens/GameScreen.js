@@ -8,20 +8,23 @@ import { generatePerlin } from '../utils';
 const crypto = require('crypto');
 let client;
 let noise;
-const mapSize = 513;
+const mapSize = 500;
 
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
+    const [userHandle, setUserHandle] = useState('');
 
     useEffect(() => {
-        client = new Client(props.roomName, data => {
-            setSyncData(prevState => ({ ...prevState, ...data }));
+        client = new Client(props.roomName, {
+            updateHandler: data => setSyncData(prevState => ({ ...prevState, ...data })),
+            setHandleHandler: data => setUserHandle(data['user_handle']),
         });
 
+        // Generate map
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
-        //noise = diamondSquare(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
+
     }, []);
 
     return (
@@ -37,6 +40,7 @@ const GameScreen = (props) => {
                 <div className="col-lg-4">
                     <ControlPanel
                         userID={client == undefined ? '' : client.userID}
+                        userHandle={userHandle}
                         roomName={props.roomName}
                         syncData={syncData}
 

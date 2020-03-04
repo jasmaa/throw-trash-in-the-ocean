@@ -10,7 +10,7 @@ const ControlPanel = (props) => {
 
     for (const player of scoreboard.slice(0, 5)) {
         playerEntries.push(
-            <tbody key={player.userHandle}>
+            <tbody key={player.userID}>
                 <tr>
                     <td>{player.userHandle}</td>
                     <td>{player.profit}</td>

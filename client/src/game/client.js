@@ -7,13 +7,15 @@ import { getCookie } from '../utils';
  */
 export default class Client {
 
-    constructor(roomName, updateHandler) {
+    constructor(roomName, { updateHandler, setHandleHandler }) {
 
         const baseURL = 'localhost'; //'192.168.99.101';
         this.socket = io.connect(`http://${baseURL}:3001`);
         this.roomName = roomName;
         this.userID = getCookie('user_id');
+
         this.updateHandler = updateHandler;
+        this.setHandleHandler = setHandleHandler;
 
         this.socket.on('connect', data => {
             this.socket.emit('join', {
@@ -37,6 +39,10 @@ export default class Client {
         this.socket.on('pollute', data => {
             this.updateHandler(data);
         });
+
+        this.socket.on('set_handle', data => {
+            this.setHandleHandler(data);
+        })
     }
 
     pollute() {

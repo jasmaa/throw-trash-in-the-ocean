@@ -21,7 +21,7 @@ const paintMap = (ctx, size, noise) => {
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const v = Math.floor(256 * noise[size * i + j]);
-      
+
       if (v > 200) {
         setValue(i, j, [0xFF, 0xFF, 0xFF]);
       } else if (v > 170) {
@@ -47,21 +47,40 @@ const MapPanel = (props) => {
   if (canvas != undefined) {
     const ctx = canvas.getContext('2d');
     paintMap(ctx, props.mapSize, props.noise);
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect(props.mapSize * Math.random(), props.mapSize * Math.random(), 10, 10);
   }
 
   return (
     <div className="card">
       <div className="card-body">
+
         <div className="progress m-3">
           <div className="progress-bar" role="progressbar" style={{ width: `${props.syncData.health}%` }}></div>
         </div>
-        <div className="d-flex flex-column justify-content-center align-items-center">
-          <canvas
-            className="m-3"
-            ref={canvasRef}
-            width={props.mapSize}
-            height={props.mapSize}
-          />
+
+        <div className="row m-5">
+          <div className="col">
+            <canvas
+              ref={canvasRef}
+              width={props.mapSize}
+              height={props.mapSize}
+            />
+          </div>
+
+          <div className="col">
+            <ul className="list-group">
+              <li className="list-group-item d-flex justify-content-between align-items-center">
+                Power Click - Lv. 1
+                <span className="badge badge-primary badge-pill">+</span>
+              </li>
+              <li className="list-group-item d-flex justify-content-between align-items-center">
+                Estate - None
+                <span className="badge badge-primary badge-pill">+</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <ul className="list-group">

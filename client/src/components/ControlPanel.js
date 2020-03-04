@@ -4,11 +4,6 @@ import Scoreboard from './Scoreboard';
 
 const ControlPanel = (props) => {
 
-  const userHandle =
-    props.syncData.players == undefined
-      ? 'none'
-      : props.syncData.players[props.userID].userHandle;
-
   return (
     <div className="card">
       <div className="card-body">
@@ -24,7 +19,7 @@ const ControlPanel = (props) => {
             type="text"
             className="form-control"
             maxLength="30"
-            value={userHandle}
+            value={props.userHandle}
             onChange={props.setUserHandleHandler}
           />
 

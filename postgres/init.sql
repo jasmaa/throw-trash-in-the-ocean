@@ -15,7 +15,7 @@ CREATE TABLE players (
 
 CREATE TABLE users (
     user_id VARCHAR(255) PRIMARY KEY,
-    user_handle VARCHAR(255) NOT NULL UNIQUE
+    user_handle VARCHAR(255) NOT NULL
 );
 
 CREATE TYPE room_event AS ENUM ('join', 'leave', 'pollute', 'chat');
