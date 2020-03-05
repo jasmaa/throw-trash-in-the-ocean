@@ -10,8 +10,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const { World } = require('./src/game');
-const { getRandomValue } = require('./src/utils');
-const pool = require('./src/config/dbConfig');
+const { User, Player } = require('./src/game/store');
 
 // === Middlware ===
 app.use(morgan('tiny'));
@@ -39,15 +38,17 @@ setInterval(async () => {
         // Update or init room
         if (world) {
             world.update();
-            await world.save(pool);
+            await world.save();
             io.in(roomName).emit('sync', world.getStat());
         } else {
             newWorld = new World(roomName);
-            await newWorld.readOrCreate(pool);
+            await newWorld.readOrCreate();
             worlds[roomName] = newWorld;
         }
     }
 }, 1000);
+
+const click2profit = (level) => 5 * level + 1;
 
 // Socket handlers
 io.on('connection', client => {
@@ -66,115 +67,71 @@ io.on('connection', client => {
         activeRooms.add(roomName);
         if (!world) {
             world = new World(roomName);
-            await world.readOrCreate(pool);
+            await world.readOrCreate();
             worlds[roomName] = world;
         }
 
-        // Add user
-        let res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
-        let userHandle;
-
-        if (res.rowCount <= 0) {
-            userID = getRandomValue(30);
-            userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user handle here
-
-            await pool.query(
-                `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
-                [userID, userHandle],
-            );
-        } else {
-            userHandle = res.rows[0]['user_handle']
-        }
-
-        // Add player
-        res = await pool.query(
-            `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
-            [userID, world.roomID],
-        );
-        let currProfit = 0;
-
-        if (res.rowCount <= 0) {
-            await pool.query(
-                `INSERT INTO players (user_id, room_id, profit) VALUES ($1, $2, $3)`,
-                [userID, worlds[roomName].roomID, 0],
-            )
-        } else {
-            currProfit = res.rows[0]['profit'];
-        }
+        const userInfo = await User.createOrGet(userID);
+        const player = await Player.createOrGet(userInfo, world.roomID);
 
         // Update cache
-        world.players[userID] = {
-            userID: userID,
-            userHandle: userHandle,
-            profit: currProfit,
-        };
+        world.players[player.userID] = player;
 
         // Update client
         client.emit('join', {
-            user_id: userID,
-            user_handle: userHandle,
+            user_id: player.userID,
+            user_handle: player.userHandle,
         });
         client.emit('sync', world.getStat());
-        client.emit('set_handle', { user_handle: userHandle });
-        client.emit('pollute', { profit: currProfit });
+        client.emit('set_handle', { user_handle: player.userHandle });
+        client.emit('pollute', { profit: player.profit });
     });
 
 
     client.on('pollute', async data => {
 
-        const roomName = data['room_name'];
         const userID = data['user_id'];
+        const roomName = data['room_name'];
         const world = worlds[roomName];
 
-        // Update player
-        let res = await pool.query(
-            `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
-            [userID, world.roomID],
-        );
+        const userInfo = await User.createOrGet(userID);
+        const player = await Player.createOrGet(userInfo, world.roomID);
 
-        if (res.rowCount > 0) {
-            // Check throttle
-            const now = new Date();
-            const timeBetween = now - world.players[userID].lastActionTime;
-            if (timeBetween < THROTTLE_TIME) {
-                return;
-            } else {
-                world.players[userID].lastActionTime = now;
-            }
-
-            // Update world
-            world.pollute(1);
-            await world.save(pool);
-
-            const currProfit = res.rows[0]['profit'] + 1;
-            await pool.query(
-                `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
-                [userID, world.roomID, currProfit],
-            );
-
-            // Update cache
-            world.players[userID].profit = currProfit;
-
-            // Update client
-            client.emit('pollute', { profit: currProfit });
-            io.in(roomName).emit('sync', world.getStat());
+        // Check throttle
+        const now = new Date();
+        const timeBetween = now - world.players[player.userID].lastActionTime;
+        if (timeBetween < THROTTLE_TIME) {
+            return;
+        } else {
+            world.players[player.userID].lastActionTime = now;
         }
+
+        // Update world
+        world.pollute(1);
+        await world.save();
+
+        // Save user profit
+        const currProfit = player.profit + click2profit(player.powerClickLevel);
+        Player.updateProfit(userID, world.roomID, currProfit);
+        world.players[userID].profit = currProfit;
+
+        // Update client
+        client.emit('pollute', { profit: currProfit });
+        io.in(roomName).emit('sync', world.getStat());
+
     });
 
     client.on('set_handle', async data => {
 
-        const roomName = data['room_name'];
-        const world = worlds[roomName];
         let userID = data['user_id'];
         let userHandle = data['user_handle'];
+        const roomName = data['room_name'];
+        const world = worlds[roomName];
 
         if (userHandle.length <= 30) {
 
             // Update user
-            await pool.query(
-                `UPDATE users SET user_handle=$2 WHERE user_id=$1`,
-                [userID, userHandle],
-            );
+            User.updateHandle(userID, userHandle);
 
             // Update cache
             world.players[userID].userHandle = userHandle;

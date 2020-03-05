@@ -1,6 +1,8 @@
 // world.js
 // Room world
 
+const pool = require('../config/dbConfig');
+
 const MAX_HEALTH = 100;
 
 /**
@@ -20,7 +22,7 @@ class World {
      * Saves world state to db
      * @param {Pool} pool DB connection 
      */
-    async save(pool) {
+    async save() {
         await pool.query(
             `UPDATE rooms SET pollution_level=$2, is_dead=$3 WHERE room_name=$1`,
             [this.roomName, this.pollutionLevel, this.isDead],
@@ -31,7 +33,7 @@ class World {
      * Read world from db or create a new one
      * @param {Pool} pool DB connection
      */
-    async readOrCreate(pool) {
+    async readOrCreate() {
 
         let res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
 

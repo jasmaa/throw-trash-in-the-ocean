@@ -10,7 +10,9 @@ CREATE TABLE players (
     player_id SERIAL PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
     room_id INTEGER NOT NULL,
-    profit INTEGER
+    profit INTEGER,
+    power_click_level INTEGER,
+    estate_level INTEGER
 );
 
 CREATE TABLE users (
