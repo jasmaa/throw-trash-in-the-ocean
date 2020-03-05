@@ -104,6 +104,7 @@ io.on('connection', client => {
 
         // Update cache
         world.players[userID] = {
+            userID: userID,
             userHandle: userHandle,
             profit: currProfit,
         };
@@ -162,6 +163,7 @@ io.on('connection', client => {
 
     client.on('set_handle', async data => {
 
+        const roomName = data['room_name'];
         const world = worlds[roomName];
         let userID = data['user_id'];
         let userHandle = data['user_handle'];

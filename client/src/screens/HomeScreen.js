@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const HomeScreen = () => {
 
-    const [roomName, setRoomName] = useState("");
+    const [roomName, setRoomName] = useState('');
 
     return (
         <div className="container container-fluid p-5">

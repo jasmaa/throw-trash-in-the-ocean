@@ -2,7 +2,7 @@ import React from 'react';
 
 const ControlPanel = (props) => {
 
-    if (props.players == undefined) return (<div></div>);
+    if (props.players == undefined) return null;
 
     let playerEntries = [];
     const scoreboard = Object.values(props.players);

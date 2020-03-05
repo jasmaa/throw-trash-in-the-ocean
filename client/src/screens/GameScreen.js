@@ -13,19 +13,19 @@ const mapSize = 500;
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
-    const [userHandle, setUserHandle] = useState('');
 
     useEffect(() => {
         client = new Client(props.roomName, {
             updateHandler: data => setSyncData(prevState => ({ ...prevState, ...data })),
-            setHandleHandler: data => setUserHandle(data['user_handle']),
         });
 
         // Generate map
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
-
     }, []);
+
+    // Stall until has user handle
+    if (client == undefined || client.userHandle == undefined) return null;
 
     return (
         <div className="container-fluid p-5">
@@ -39,13 +39,13 @@ const GameScreen = (props) => {
                 </div>
                 <div className="col-lg-4">
                     <ControlPanel
-                        userID={client == undefined ? '' : client.userID}
-                        userHandle={userHandle}
+                        userID={client.userID}
+                        userHandle={client.userHandle}
                         roomName={props.roomName}
                         syncData={syncData}
 
                         polluteHandler={() => client.pollute()}
-                        setUserHandleHandler={e => client.setUserHandle(e.target.value)}
+                        userHandleHandler={e => client.setUserHandle(e.target.value)}
                     />
                 </div>
             </div>

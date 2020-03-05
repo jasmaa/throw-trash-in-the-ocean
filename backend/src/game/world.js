@@ -1,8 +1,6 @@
 // world.js
 // Room world
 
-const sanitizer = require('sanitizer');
-
 const MAX_HEALTH = 100;
 
 /**
@@ -61,6 +59,7 @@ class World {
         );
         for (const player of playerRes.rows) {
             this.players[player['user_id']] = {
+                userID: player['user_id'],
                 userHandle: player['user_handle'],
                 profit: player['profit'],
                 lastActionTime: 0,
@@ -96,15 +95,6 @@ class World {
      * Get world statistics
      */
     getStat() {
-        
-        // Sanitize
-        /*
-        const players = JSON.parse(JSON.stringify(this.players));
-        for(let userID in players) {
-            players[userID].userHandle = sanitizer.escape(players[userID].userHandle);
-        }
-        */
-
         return {
             health: MAX_HEALTH - this.pollutionLevel,
             players: this.players,
