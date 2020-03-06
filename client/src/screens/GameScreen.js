@@ -32,9 +32,12 @@ const GameScreen = (props) => {
             <div className="row">
                 <div className="col-lg-8">
                     <MapPanel
+                        userID={client.userID}
                         syncData={syncData}
                         noise={noise}
                         mapSize={mapSize}
+
+                        upgradeClickHandler={() => client.upgradeClick()}
                     />
                 </div>
                 <div className="col-lg-4">

@@ -6,6 +6,8 @@ const ControlPanel = (props) => {
 
   const [userHandle, setUserHandle] = useState(props.userHandle);
 
+  const profit = props.syncData.players[props.userID].profit;
+
   return (
     <div className="card">
       <div className="card-body">
@@ -14,7 +16,7 @@ const ControlPanel = (props) => {
           <h3>Room: {props.roomName}</h3>
 
           <center>
-            <button className="round-button m-5" onClick={props.polluteHandler}>{props.syncData.profit}</button>
+            <button className="round-button m-5" onClick={props.polluteHandler}>{profit}</button>
           </center>
 
           <input
@@ -27,7 +29,7 @@ const ControlPanel = (props) => {
               props.userHandleHandler(e);
             }}
           />
-          
+
           <Scoreboard players={props.syncData.players} />
         </div>
       </div>

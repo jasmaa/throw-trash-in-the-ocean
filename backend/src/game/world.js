@@ -64,6 +64,7 @@ class World {
                 userID: player['user_id'],
                 userHandle: player['user_handle'],
                 profit: player['profit'],
+                powerClickLevel: player['power_click_level'],
                 lastActionTime: 0,
             }
         }

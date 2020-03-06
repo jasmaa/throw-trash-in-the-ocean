@@ -1,5 +1,5 @@
 // store.js
-// Storage commands
+// Interface with DB
 
 const pool = require('../config/dbConfig');
 const { getRandomValue } = require('../utils');
@@ -77,6 +77,13 @@ class Player {
         await pool.query(
             `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
             [userID, roomID, profit],
+        );
+    }
+
+    static async updateClickLevel(userID, roomID, level) {
+        await pool.query(
+            `UPDATE players SET power_click_level=$3 WHERE user_id=$1 AND room_id=$2`,
+            [userID, roomID, level],
         );
     }
 }

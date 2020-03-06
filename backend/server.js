@@ -19,8 +19,12 @@ app.use(cors());
 
 // === Game ===
 const THROTTLE_TIME = 100;
+const CLICK_UPGRADE_COST = 10;
+
 const activeRooms = new Set();
 const worlds = {};
+
+const click2profit = (level) => 5 * level + 1;
 
 // Periodically update and save rooms
 setInterval(async () => {
@@ -47,8 +51,6 @@ setInterval(async () => {
         }
     }
 }, 1000);
-
-const click2profit = (level) => 5 * level + 1;
 
 // Socket handlers
 io.on('connection', client => {
@@ -84,9 +86,7 @@ io.on('connection', client => {
         });
         client.emit('sync', world.getStat());
         client.emit('set_handle', { user_handle: player.userHandle });
-        client.emit('pollute', { profit: player.profit });
     });
-
 
     client.on('pollute', async data => {
 
@@ -112,30 +112,51 @@ io.on('connection', client => {
 
         // Save user profit
         const currProfit = player.profit + click2profit(player.powerClickLevel);
-        Player.updateProfit(userID, world.roomID, currProfit);
+        await Player.updateProfit(userID, world.roomID, currProfit);
         world.players[userID].profit = currProfit;
 
         // Update client
-        client.emit('pollute', { profit: currProfit });
         io.in(roomName).emit('sync', world.getStat());
-
     });
 
     client.on('set_handle', async data => {
 
-        let userID = data['user_id'];
-        let userHandle = data['user_handle'];
+        const userID = data['user_id'];
+        const userHandle = data['user_handle'];
         const roomName = data['room_name'];
         const world = worlds[roomName];
 
         if (userHandle.length <= 30) {
-
             // Update user
-            User.updateHandle(userID, userHandle);
-
-            // Update cache
+            await User.updateHandle(userID, userHandle);
             world.players[userID].userHandle = userHandle;
+
+            // Update client
             client.emit('set_handle', { user_handle: userHandle });
+            io.in(roomName).emit('sync', world.getStat());
+        }
+    });
+
+    client.on('upgrade_click', async data => {
+
+        const userID = data['user_id'];
+        const roomName = data['room_name'];
+        const world = worlds[roomName];
+
+        const userInfo = await User.createOrGet(userID);
+        const player = await Player.createOrGet(userInfo, world.roomID);
+
+        if (player.profit >= CLICK_UPGRADE_COST) {
+
+            const currProfit = player.profit - CLICK_UPGRADE_COST;
+            await Player.updateProfit(userID, world.roomID, currProfit);
+            world.players[userID].profit = currProfit;
+
+            const currClickLevel = player.powerClickLevel + 1;
+            await Player.updateClickLevel(userID, world.roomID, currClickLevel);
+            world.players[userID].powerClickLevel = currClickLevel;
+
+            // Update client
             io.in(roomName).emit('sync', world.getStat());
         }
     });

@@ -25,7 +25,6 @@ export default class Client {
 
         this.socket.on('sync', data => {
             this.updateHandler(data);
-            console.log('sdfkljd');
         });
 
         this.socket.on('join', data => {
@@ -57,6 +56,13 @@ export default class Client {
             user_id: this.userID,
             room_name: this.roomName,
             user_handle: userHandle,
+        });
+    }
+
+    upgradeClick() {
+        this.socket.emit('upgrade_click', {
+            user_id: this.userID,
+            room_name: this.roomName,
         });
     }
 }
