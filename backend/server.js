@@ -11,6 +11,7 @@ const io = require('socket.io')(server);
 
 const { World } = require('./src/game');
 const { User, Player } = require('./src/game/store');
+const { level2profit, level2cost } = require('./src/utils');
 
 // === Middlware ===
 app.use(morgan('tiny'));
@@ -23,8 +24,6 @@ const CLICK_UPGRADE_COST = 10;
 
 const activeRooms = new Set();
 const worlds = {};
-
-const click2profit = (level) => 5 * level + 1;
 
 // Periodically update and save rooms
 setInterval(async () => {
@@ -111,7 +110,7 @@ io.on('connection', client => {
         await world.save();
 
         // Save user profit
-        const currProfit = player.profit + click2profit(player.powerClickLevel);
+        const currProfit = player.profit + level2profit(player.powerClickLevel);
         await Player.updateProfit(userID, world.roomID, currProfit);
         world.players[userID].profit = currProfit;
 
@@ -146,9 +145,9 @@ io.on('connection', client => {
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
 
-        if (player.profit >= CLICK_UPGRADE_COST) {
+        if (player.profit >= level2cost(player.powerClickLevel)) {
 
-            const currProfit = player.profit - CLICK_UPGRADE_COST;
+            const currProfit = player.profit - level2cost(player.powerClickLevel);
             await Player.updateProfit(userID, world.roomID, currProfit);
             world.players[userID].profit = currProfit;
 

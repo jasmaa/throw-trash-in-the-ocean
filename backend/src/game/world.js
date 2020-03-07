@@ -2,6 +2,7 @@
 // Room world
 
 const pool = require('../config/dbConfig');
+const { level2cost } = require('../utils');
 
 const MAX_HEALTH = 100;
 
@@ -98,9 +99,16 @@ class World {
      * Get world statistics
      */
     getStat() {
+
+        const players = JSON.parse(JSON.stringify(this.players));
+        for (const userID in players) {
+            const player = players[userID]
+            player.powerClickCost = level2cost(player.powerClickLevel);
+        }
+
         return {
             health: MAX_HEALTH - this.pollutionLevel,
-            players: this.players,
+            players: players,
         }
     }
 }

@@ -52,7 +52,7 @@ const MapPanel = (props) => {
     ctx.fillRect(props.mapSize * Math.random(), props.mapSize * Math.random(), 10, 10);
   }
 
-  const powerClickLevel = props.syncData.players[props.userID].powerClickLevel;
+  const player = props.syncData.players[props.userID];
 
   return (
     <div className="card">
@@ -74,8 +74,8 @@ const MapPanel = (props) => {
           <div className="col">
             <ul className="list-group">
               <li className="list-group-item d-flex justify-content-between align-items-center">
-                Power Click - Lv. {powerClickLevel}
-                <button className="badge badge-primary badge-pill" onClick={props.upgradeClickHandler}>+</button>
+                Power Click - Lv. {player.powerClickLevel}
+                <button className="badge badge-primary badge-pill" onClick={props.upgradeClickHandler}>{player.powerClickCost}</button>
               </li>
               <li className="list-group-item d-flex justify-content-between align-items-center">
                 Estate - None
