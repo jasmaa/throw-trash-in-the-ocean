@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
 import Scoreboard from './Scoreboard';
 
@@ -6,7 +6,22 @@ const ControlPanel = (props) => {
 
   const [userHandle, setUserHandle] = useState(props.userHandle);
 
-  const profit = props.syncData.players[props.userID].profit;
+  const canvasRef = useRef(null);
+  const canvas = canvasRef.current;
+  if (canvas != undefined) {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'red';
+
+    for (const p of props.particles) {
+      ctx.fillText(p.value, p.x, p.y);
+    }
+  }
+
+  const player = props.syncData.players[props.userID];
+  console.log(player)
 
   return (
     <div className="card">
@@ -16,7 +31,15 @@ const ControlPanel = (props) => {
           <h3>Room: {props.roomName}</h3>
 
           <center>
-            <button className="round-button m-5" onClick={props.polluteHandler}>{profit}</button>
+            <canvas
+              ref={canvasRef}
+              className="particle-canvas"
+              width={500}
+              height={500}
+            />
+            <button className="round-button m-5" onClick={() => props.polluteHandler(canvas, player.powerClickProfit)}>
+              {player.profit}
+            </button>
           </center>
 
           <input

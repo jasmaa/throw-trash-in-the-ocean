@@ -2,7 +2,7 @@
 // Room world
 
 const pool = require('../config/dbConfig');
-const { level2cost } = require('../utils');
+const { level2cost, level2profit } = require('../utils');
 
 const MAX_HEALTH = 100;
 
@@ -102,7 +102,8 @@ class World {
 
         const players = JSON.parse(JSON.stringify(this.players));
         for (const userID in players) {
-            const player = players[userID]
+            const player = players[userID];
+            player.powerClickProfit = level2profit(player.powerClickLevel);
             player.powerClickCost = level2cost(player.powerClickLevel);
         }
 

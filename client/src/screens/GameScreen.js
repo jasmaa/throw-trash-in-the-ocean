@@ -6,13 +6,17 @@ import Client from '../game/client';
 import { generatePerlin } from '../utils';
 
 const crypto = require('crypto');
+
 let client;
 let noise;
 const mapSize = 500;
 
+let particles = [];
+
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
+    const [toggle, setToggle] = useState(true); // TEMP: find a better way to do this
 
     useEffect(() => {
         client = new Client(props.roomName, {
@@ -22,6 +26,15 @@ const GameScreen = (props) => {
         // Generate map
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
+
+        setInterval(() => {
+            for (const p of particles) {
+                p.y += 5;
+            }
+            particles = particles.filter(p => p.y < p.limit);
+
+            setToggle(prevState => !prevState);
+        }, 100)
     }, []);
 
     // Stall until has user handle
@@ -46,8 +59,17 @@ const GameScreen = (props) => {
                         userHandle={client.userHandle}
                         roomName={props.roomName}
                         syncData={syncData}
+                        particles={particles}
 
-                        polluteHandler={() => client.pollute()}
+                        polluteHandler={(canvas, value) => {
+                            client.pollute();
+                            particles.push({
+                                x: canvas.width * Math.random(),
+                                y: 10,
+                                value: value,
+                                limit: canvas.height,
+                            });
+                        }}
                         userHandleHandler={e => client.setUserHandle(e.target.value)}
                     />
                 </div>
