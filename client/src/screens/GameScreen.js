@@ -11,12 +11,10 @@ let client;
 let noise;
 const mapSize = 500;
 
-let particles = [];
-
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
-    const [toggle, setToggle] = useState(true); // TEMP: find a better way to do this
+    const [particles, setParticles] = useState([]);
 
     useEffect(() => {
         client = new Client(props.roomName, {
@@ -28,13 +26,13 @@ const GameScreen = (props) => {
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
 
         setInterval(() => {
-            for (const p of particles) {
-                p.y += 5;
-            }
-            particles = particles.filter(p => p.y < p.limit);
-
-            setToggle(prevState => !prevState);
-        }, 100)
+            setParticles(prevState => {
+                for (const p of prevState) {
+                    p.y -= 5;
+                }
+                return prevState.filter(p => p.y > 0);
+            });
+        }, 100);
     }, []);
 
     // Stall until has user handle
@@ -63,12 +61,12 @@ const GameScreen = (props) => {
 
                         polluteHandler={(canvas, value) => {
                             client.pollute();
-                            particles.push({
-                                x: canvas.width * Math.random(),
-                                y: 10,
+                            setParticles(prevState => [...prevState, {
+                                x: canvas.width / 2 + canvas.width / 4 * (Math.random() - 0.5),
+                                y: canvas.height / 2,
                                 value: value,
                                 limit: canvas.height,
-                            });
+                            }]);
                         }}
                         userHandleHandler={e => client.setUserHandle(e.target.value)}
                     />

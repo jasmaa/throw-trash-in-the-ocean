@@ -21,7 +21,6 @@ const ControlPanel = (props) => {
   }
 
   const player = props.syncData.players[props.userID];
-  console.log(player)
 
   return (
     <div className="card">
