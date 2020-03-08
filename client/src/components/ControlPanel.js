@@ -1,23 +1,56 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, createContext } from 'react';
 
 import Scoreboard from './Scoreboard';
 
 const ControlPanel = (props) => {
 
   const [userHandle, setUserHandle] = useState(props.userHandle);
+  const [particles, setParticles] = useState([]);
 
+  useEffect(() => {
+
+    // Particle updater
+    setInterval(() => {
+      setParticles(prevState => {
+        for (const p of prevState) {
+          p.y -= 5;
+          p.x += 4*(0.5-Math.random());
+        }
+        return prevState.filter(p => p.y > 0);
+      });
+    }, 50);
+  }, []);
+
+  const clickHandler = () => {
+
+    setParticles(prevState => [...prevState, {
+      x: canvas.width / 2 + canvas.width / 4 * (Math.random() - 0.5),
+      y: canvas.height / 2,
+      value: player.powerClickProfit,
+    }]);
+    props.polluteHandler();
+  }
+
+  // Canvas render
   const canvasRef = useRef(null);
   const canvas = canvasRef.current;
+  const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10); // TODO: replace me later
+
   if (canvas != undefined) {
+
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
 
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'red';
+    ctx.lineWidth = 1.5;
+    ctx.font = '30px Arial';
 
-    for (const p of props.particles) {
-      ctx.fillText(p.value, p.x, p.y);
-    }
+    particles.forEach(p => {
+      ctx.fillStyle = `rgba(255, 255, 255, ${fade(2 * p.y / canvas.height)})`;
+      ctx.strokeStyle = `rgba(0, 0, 0, ${fade(2 * p.y / canvas.height)})`;
+      ctx.strokeText(`+${p.value}`, p.x, p.y);
+      ctx.fillText(`+${p.value}`, p.x, p.y);
+    });
   }
 
   const player = props.syncData.players[props.userID];
@@ -36,7 +69,7 @@ const ControlPanel = (props) => {
               width={500}
               height={500}
             />
-            <button className="round-button m-5" onClick={() => props.polluteHandler(canvas, player.powerClickProfit)}>
+            <button className="round-button m-5" onClick={clickHandler}>
               {player.profit}
             </button>
           </center>

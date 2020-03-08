@@ -14,7 +14,6 @@ const mapSize = 500;
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
-    const [particles, setParticles] = useState([]);
 
     useEffect(() => {
         client = new Client(props.roomName, {
@@ -24,15 +23,6 @@ const GameScreen = (props) => {
         // Generate map
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
-
-        setInterval(() => {
-            setParticles(prevState => {
-                for (const p of prevState) {
-                    p.y -= 5;
-                }
-                return prevState.filter(p => p.y > 0);
-            });
-        }, 100);
     }, []);
 
     // Stall until has user handle
@@ -57,17 +47,8 @@ const GameScreen = (props) => {
                         userHandle={client.userHandle}
                         roomName={props.roomName}
                         syncData={syncData}
-                        particles={particles}
 
-                        polluteHandler={(canvas, value) => {
-                            client.pollute();
-                            setParticles(prevState => [...prevState, {
-                                x: canvas.width / 2 + canvas.width / 4 * (Math.random() - 0.5),
-                                y: canvas.height / 2,
-                                value: value,
-                                limit: canvas.height,
-                            }]);
-                        }}
+                        polluteHandler={() => client.pollute()}
                         userHandleHandler={e => client.setUserHandle(e.target.value)}
                     />
                 </div>
