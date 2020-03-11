@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: tiangolo/docker-with-compose
+   
+  steps:
+    - checkout
+    
+    - run:
+        name: Build docker-compose containers
+        command: docker-compose build
+
+workflows:
+  version: 2
+  Build and Test:
+    jobs:
+      - build
