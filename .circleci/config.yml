@@ -3,13 +3,12 @@ jobs:
   build:
     docker:
       - image: tiangolo/docker-with-compose
-   
-  steps:
-    - checkout
-    
-    - run:
-        name: Build docker-compose containers
-        command: docker-compose build
+    steps:
+      - checkout
+
+      - run:
+          name: Build docker-compose containers
+          command: docker-compose build
 
 workflows:
   version: 2
