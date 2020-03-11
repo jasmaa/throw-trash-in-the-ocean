@@ -69,8 +69,9 @@ const ControlPanel = (props) => {
               width={500}
               height={500}
             />
-            <button className="round-button m-5" onClick={clickHandler}>
-              {player.profit}
+            {/* TODO: replace with canvas? */}
+            <button className="round-button m-5" onMouseDown={clickHandler}>
+              <h2>{player.profit}</h2>
             </button>
           </center>
 

@@ -9,8 +9,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const { World } = require('./src/game');
-const { User, Player } = require('./src/game/store');
+const { World, User, Player, Event } = require('./src/game');
 const { level2profit, level2cost } = require('./src/utils');
 
 // === Middlware ===
@@ -20,7 +19,6 @@ app.use(cors());
 
 // === Game ===
 const THROTTLE_TIME = 100;
-const CLICK_UPGRADE_COST = 10;
 
 const activeRooms = new Set();
 const worlds = {};
@@ -75,8 +73,12 @@ io.on('connection', client => {
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
 
+        // Log join
+        const joinEvent = await Event.createJoin(userInfo, world.roomID);
+
         // Update cache
         world.players[player.userID] = player;
+        world.events.unshift(joinEvent);
 
         // Update client
         client.emit('join', {

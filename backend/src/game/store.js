@@ -84,11 +84,44 @@ class Player {
         await pool.query(
             `UPDATE players SET power_click_level=$3 WHERE user_id=$1 AND room_id=$2`,
             [userID, roomID, level],
+        )
+    }
+}
+
+/**
+ * Room event
+ */
+class Event {
+
+    static async createJoin(userInfo, roomID) {
+        await pool.query(
+            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW())`,
+            [roomID, 'join', `${userInfo.userHandle} has joined!`],
         );
+        return {
+            room_id: roomID,
+            event_type: 'join',
+            event_description: `${userInfo.userHandle} has joined!`,
+            event_timestamp: Date.now(), //TODO: convert this
+        };
+    }
+
+    static async createLeave(userInfo, roomID) {
+        await pool.query(
+            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW())`,
+            [roomID, 'leave', `${userInfo.userHandle} has left`],
+        );
+        return {
+            room_id: roomID,
+            event_type: 'leave',
+            event_description: `${userInfo.userHandle} has left`,
+            event_timestamp: Date.now(),
+        };
     }
 }
 
 module.exports = {
     User: User,
     Player: Player,
+    Event: Event,
 }

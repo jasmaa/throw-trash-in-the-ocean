@@ -23,6 +23,8 @@ CREATE TABLE users (
 CREATE TYPE room_event AS ENUM ('join', 'leave', 'pollute', 'chat');
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
+    room_id INTEGER NOT NULL,
     event_type room_event,
-    event_description VARCHAR(255) NOT NULL
+    event_description VARCHAR(255) NOT NULL,
+    event_timestamp TIMESTAMP WITH TIME ZONE
 );

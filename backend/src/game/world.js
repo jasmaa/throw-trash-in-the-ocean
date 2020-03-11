@@ -17,6 +17,7 @@ class World {
         this.pollutionLevel = 0;
         this.isDead = false;
         this.players = {};
+        this.events = [];
     }
 
     /**
@@ -69,6 +70,13 @@ class World {
                 lastActionTime: 0,
             }
         }
+
+        // Init event cache
+        const eventRes = await pool.query(
+            `SELECT * FROM events WHERE room_id=$1 ORDER BY event_timestamp DESC LIMIT 10`,
+            [this.roomID],
+        );
+        this.events = eventRes.rows;
     }
 
     /**
@@ -110,6 +118,7 @@ class World {
         return {
             health: MAX_HEALTH - this.pollutionLevel,
             players: players,
+            events: this.events,
         }
     }
 }
