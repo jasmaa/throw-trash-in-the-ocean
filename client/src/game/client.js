@@ -9,7 +9,9 @@ export default class Client {
 
     constructor(roomName, { updateHandler }) {
 
-        const baseURL = 'localhost'; //'192.168.99.101';
+        console.log(process.env.REACT_APP_BASE_URL)
+
+        const baseURL = process.env.REACT_APP_BASE_URL;
         this.socket = io.connect(`http://${baseURL}:3001`);
         this.roomName = roomName;
         this.userID = getCookie('user_id');

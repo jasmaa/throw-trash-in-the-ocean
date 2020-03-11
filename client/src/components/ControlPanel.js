@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import Scoreboard from './Scoreboard';
 
@@ -14,7 +14,7 @@ const ControlPanel = (props) => {
       setParticles(prevState => {
         for (const p of prevState) {
           p.y -= 5;
-          p.x += 4*(0.5-Math.random());
+          p.x += 4 * (0.5 - Math.random());
         }
         return prevState.filter(p => p.y > 0);
       });

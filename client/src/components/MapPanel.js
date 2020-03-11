@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import ReactTooltip from 'react-tooltip';
 
 /**
  * Paint noise as map
@@ -74,7 +75,7 @@ const MapPanel = (props) => {
           <div className="col">
             <ul className="list-group">
               <li className="list-group-item d-flex justify-content-between align-items-center">
-                Power Click - Lv. {player.powerClickLevel}
+                <span data-tip={`+$${player.powerClickProfit} per click`}>Power Click - Lv. {player.powerClickLevel}</span>
                 <button className="badge badge-primary badge-pill" onClick={props.upgradeClickHandler}>{player.powerClickCost}</button>
               </li>
               <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -84,13 +85,14 @@ const MapPanel = (props) => {
             </ul>
           </div>
         </div>
+        <ReactTooltip />
 
         <ul className="list-group">
           <li className="list-group-item">An FOE has appeared!</li>
         </ul>
 
       </div>
-    </div>
+    </div >
   );
 }
 
