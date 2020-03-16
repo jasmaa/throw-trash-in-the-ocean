@@ -80,48 +80,48 @@ class World {
         this.events = eventRes.rows;
     }
 
-/**
- * Update world
- */
-update() {
-    this.recover(30);
-}
-
-/**
- * Pollute world
- * @param {integer} n 
- */
-pollute(n) {
-    this.pollutionLevel += n;
-}
-
-/**
- * Recover from pollution
- * @param {integer} n 
- */
-recover(n) {
-    this.pollutionLevel -= 1 * n;
-    this.pollutionLevel = Math.max(this.pollutionLevel, 0);
-}
-
-/**
- * Get world statistics
- */
-getStat() {
-
-    const players = JSON.parse(JSON.stringify(this.players));
-    for (const userID in players) {
-        const player = players[userID];
-        player.powerClickProfit = level2profit(player.powerClickLevel);
-        player.powerClickCost = level2cost(player.powerClickLevel);
+    /**
+     * Update world
+     */
+    update() {
+        this.recover(30);
     }
 
-    return {
-        health: MAX_HEALTH - this.pollutionLevel,
-        players: players,
-        events: this.events,
+    /**
+     * Pollute world
+     * @param {integer} n 
+     */
+    pollute(n) {
+        this.pollutionLevel += n;
     }
-}
+
+    /**
+     * Recover from pollution
+     * @param {integer} n 
+     */
+    recover(n) {
+        this.pollutionLevel -= 1 * n;
+        this.pollutionLevel = Math.max(this.pollutionLevel, 0);
+    }
+
+    /**
+     * Get world statistics
+     */
+    getStat() {
+
+        const players = JSON.parse(JSON.stringify(this.players));
+        for (const userID in players) {
+            const player = players[userID];
+            player.powerClickProfit = level2profit(player.powerClickLevel);
+            player.powerClickCost = level2cost(player.powerClickLevel);
+        }
+
+        return {
+            health: MAX_HEALTH - this.pollutionLevel,
+            players: players,
+            events: this.events.slice(0, 10),
+        }
+    }
 }
 
 module.exports = World;

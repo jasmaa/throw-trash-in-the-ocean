@@ -7,9 +7,9 @@ const { getRandomValue } = require('../utils');
 /**
  * User
  */
-class User {
+const User = {
 
-    static async createOrGet(userID) {
+    async createOrGet(userID) {
         const res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
         let userHandle;
 
@@ -29,22 +29,22 @@ class User {
             userID: userID,
             userHandle: userHandle,
         }
-    }
+    },
 
-    static async updateHandle(userID, userHandle) {
+    async updateHandle(userID, userHandle) {
         await pool.query(
             `UPDATE users SET user_handle=$2 WHERE user_id=$1`,
             [userID, userHandle],
         );
-    }
+    },
 }
 
 /**
  * Player
  */
-class Player {
+const Player = {
 
-    static async createOrGet(userInfo, roomID) {
+    async createOrGet(userInfo, roomID) {
 
         const { userID, userHandle } = userInfo;
 
@@ -71,29 +71,29 @@ class Player {
             profit: currProfit,
             powerClickLevel: powerClickLevel,
         }
-    }
+    },
 
-    static async updateProfit(userID, roomID, profit) {
+    async updateProfit(userID, roomID, profit) {
         await pool.query(
             `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
             [userID, roomID, profit],
         );
-    }
+    },
 
-    static async updateClickLevel(userID, roomID, level) {
+    async updateClickLevel(userID, roomID, level) {
         await pool.query(
             `UPDATE players SET power_click_level=$3 WHERE user_id=$1 AND room_id=$2`,
             [userID, roomID, level],
         )
-    }
+    },
 }
 
 /**
  * Room event
  */
-class Event {
+const Event = {
 
-    static async createJoin(userInfo, roomID) {
+    async createJoin(userInfo, roomID) {
         await pool.query(
             `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
             [roomID, 'join', `${userInfo.userHandle} has joined!`],
@@ -104,9 +104,9 @@ class Event {
             event_description: `${userInfo.userHandle} has joined!`,
             event_timestamp: Date.now(),
         };
-    }
+    },
 
-    static async createLeave(userInfo, roomID) {
+    async createLeave(userInfo, roomID) {
         await pool.query(
             `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
             [roomID, 'leave', `${userInfo.userHandle} has left`],
@@ -117,7 +117,7 @@ class Event {
             event_description: `${userInfo.userHandle} has left`,
             event_timestamp: Date.now(),
         };
-    }
+    },
 }
 
 module.exports = {
