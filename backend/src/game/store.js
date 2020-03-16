@@ -95,20 +95,20 @@ class Event {
 
     static async createJoin(userInfo, roomID) {
         await pool.query(
-            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW())`,
+            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
             [roomID, 'join', `${userInfo.userHandle} has joined!`],
         );
         return {
             room_id: roomID,
             event_type: 'join',
             event_description: `${userInfo.userHandle} has joined!`,
-            event_timestamp: Date.now(), //TODO: convert this
+            event_timestamp: Date.now(),
         };
     }
 
     static async createLeave(userInfo, roomID) {
         await pool.query(
-            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW())`,
+            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
             [roomID, 'leave', `${userInfo.userHandle} has left`],
         );
         return {

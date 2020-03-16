@@ -76,51 +76,52 @@ class World {
             `SELECT * FROM events WHERE room_id=$1 ORDER BY event_timestamp DESC LIMIT 10`,
             [this.roomID],
         );
+        eventRes.rows.forEach(data => data.event_timestamp = Date.parse(data.event_timestamp));
         this.events = eventRes.rows;
     }
 
-    /**
-     * Update world
-     */
-    update() {
-        this.recover(30);
+/**
+ * Update world
+ */
+update() {
+    this.recover(30);
+}
+
+/**
+ * Pollute world
+ * @param {integer} n 
+ */
+pollute(n) {
+    this.pollutionLevel += n;
+}
+
+/**
+ * Recover from pollution
+ * @param {integer} n 
+ */
+recover(n) {
+    this.pollutionLevel -= 1 * n;
+    this.pollutionLevel = Math.max(this.pollutionLevel, 0);
+}
+
+/**
+ * Get world statistics
+ */
+getStat() {
+
+    const players = JSON.parse(JSON.stringify(this.players));
+    for (const userID in players) {
+        const player = players[userID];
+        player.powerClickProfit = level2profit(player.powerClickLevel);
+        player.powerClickCost = level2cost(player.powerClickLevel);
     }
 
-    /**
-     * Pollute world
-     * @param {integer} n 
-     */
-    pollute(n) {
-        this.pollutionLevel += n;
+    return {
+        health: MAX_HEALTH - this.pollutionLevel,
+        players: players,
+        events: this.events,
     }
-
-    /**
-     * Recover from pollution
-     * @param {integer} n 
-     */
-    recover(n) {
-        this.pollutionLevel -= 1 * n;
-        this.pollutionLevel = Math.max(this.pollutionLevel, 0);
-    }
-
-    /**
-     * Get world statistics
-     */
-    getStat() {
-
-        const players = JSON.parse(JSON.stringify(this.players));
-        for (const userID in players) {
-            const player = players[userID];
-            player.powerClickProfit = level2profit(player.powerClickLevel);
-            player.powerClickCost = level2cost(player.powerClickLevel);
-        }
-
-        return {
-            health: MAX_HEALTH - this.pollutionLevel,
-            players: players,
-            events: this.events,
-        }
-    }
+}
 }
 
 module.exports = World;
