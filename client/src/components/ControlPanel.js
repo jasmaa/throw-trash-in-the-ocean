@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useDebounce } from 'react-use';
 
 import Scoreboard from './Scoreboard';
 
@@ -14,6 +15,14 @@ const ControlPanel = (props) => {
 
   const radiusRatio = !isMouseDown && clickCooldown <= 0 ? 0.4 : 0.37;
   const fontRatio = !isMouseDown && clickCooldown <= 0 ? 1 : 0.95;
+
+  useDebounce(
+    () => {
+      props.clientSetUserHandle(userHandle);
+    },
+    100,
+    [userHandle],
+  );
 
   useEffect(() => {
 
@@ -128,7 +137,6 @@ const ControlPanel = (props) => {
             value={userHandle}
             onChange={e => {
               setUserHandle(e.target.value);
-              props.userHandleHandler(e);
             }}
           />
 

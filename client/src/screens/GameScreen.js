@@ -49,7 +49,7 @@ const GameScreen = (props) => {
                         syncData={syncData}
 
                         polluteHandler={() => client.pollute()}
-                        userHandleHandler={e => client.setUserHandle(e.target.value)}
+                        clientSetUserHandle={handle => client.setUserHandle(handle)}
                     />
                 </div>
             </div>
