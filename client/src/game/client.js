@@ -1,6 +1,6 @@
 import io from 'socket.io-client/dist/socket.io';
 
-import { getCookie } from '../utils';
+import { getCookie } from 'src/utils';
 
 /**
  * Socket client wrapper

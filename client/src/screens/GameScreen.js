@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import ControlPanel from '../components/ControlPanel';
-import MapPanel from '../components/MapPanel';
-import Client from '../game/client';
-import { generatePerlin } from '../utils';
+import ControlPanel from 'src/components/ControlPanel';
+import MapPanel from 'src/components/MapPanel';
+import Client from 'src/game/client';
+import { generatePerlin } from 'src/utils';
 
 const crypto = require('crypto');
 

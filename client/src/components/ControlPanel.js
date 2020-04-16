@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDebounce } from 'react-use';
 
-import Scoreboard from './Scoreboard';
+import Scoreboard from 'src/components/Scoreboard';
 
 const UPDATE_TIME = 10;
 const CLICK_COOLDOWN_TIME = 10;
