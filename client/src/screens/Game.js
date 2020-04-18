@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import ControlPanel from 'src/components/ControlPanel';
 import MapPanel from 'src/components/MapPanel';
+import Loading from 'src/components/Loading';
 import Client from 'src/game/client';
 import { generatePerlin } from 'src/utils';
 
@@ -26,7 +27,7 @@ const GameScreen = (props) => {
     }, []);
 
     // Stall until has user handle
-    if (client == undefined || client.userHandle == undefined) return null;
+    if (client == undefined || client.userHandle == undefined) return <Loading />;
 
     return (
         <div className="container-fluid p-5">

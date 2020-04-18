@@ -58,9 +58,11 @@ const MapPanel = (props) => {
   const renderEvents = () => {
     const events = [];
     for (const event of props.syncData.events) {
-      events.push(<li className="list-group-item">
-        {`${event['event_timestamp']} - ${event['event_description']}`}
-      </li>);
+      events.push(
+        <li className="list-group-item" key={event.event_timestamp}>
+          {`${event['event_timestamp']} - ${event['event_description']}`}
+        </li>
+      );
     }
     return events;
   }
