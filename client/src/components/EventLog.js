@@ -6,10 +6,10 @@ const MapPanel = (props) => {
         const events = [];
         for (const event of props.events) {
 
-            const eventPlayer = props.players[event['user_id']];
+            const eventPlayer = props.players[event.userID];
 
             var eventDescription;
-            switch (event['event_type']) {
+            switch (event.eventType) {
                 case 'join':
                     eventDescription = `${eventPlayer.userHandle} has joined the room`;
                     break;
@@ -22,8 +22,8 @@ const MapPanel = (props) => {
             }
 
             events.push(
-                <li className="list-group-item" key={event['event_timestamp']}>
-                    {`${event['event_timestamp']} - ${eventDescription}`}
+                <li className="list-group-item" key={event.eventTimestamp}>
+                    {`${event.eventTimestamp} - ${eventDescription}`}
                 </li>
             );
         }

@@ -124,7 +124,6 @@ const ControlPanel = (props) => {
               ref={canvasRef}
               width={500}
               height={500}
-              onMouseOver={() => console.log('mouseover')}
               onMouseDown={mouseDownHandler}
               onMouseUp={mouseUpHandler}
             />

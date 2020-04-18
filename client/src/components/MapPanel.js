@@ -87,11 +87,10 @@ const MapPanel = (props) => {
             </ul>
           </div>
         </div>
-        <ReactTooltip />
 
         <EventLog events={props.syncData.events} players={props.syncData.players} />
-
       </div>
+      <ReactTooltip />
     </div >
   );
 }

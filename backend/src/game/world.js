@@ -126,16 +126,7 @@ class World {
         return {
             'health': MAX_HEALTH - this.pollutionLevel,
             'players': players,
-            'events': this.events
-                .slice(0, 10)
-                .map(v => {
-                    return {
-                        'room_id': v.roomID,
-                        'user_id': v.userID,
-                        'event_type': v.eventType,
-                        'event_timestamp': v.eventTimestamp,
-                    }
-                }),
+            'events': this.events.slice(0, 10),
         }
     }
 }
