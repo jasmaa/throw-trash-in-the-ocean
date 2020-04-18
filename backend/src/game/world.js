@@ -124,9 +124,9 @@ class World {
 
         // Build JSON response
         return {
-            health: MAX_HEALTH - this.pollutionLevel,
-            players: players,
-            events: this.events
+            'health': MAX_HEALTH - this.pollutionLevel,
+            'players': players,
+            'events': this.events
                 .slice(0, 10)
                 .map(v => {
                     return {

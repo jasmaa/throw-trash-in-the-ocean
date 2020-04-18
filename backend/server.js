@@ -85,7 +85,9 @@ io.on('connection', client => {
             user_handle: player.userHandle,
         });
         client.emit('sync', world.getState());
-        client.emit('set_handle', { user_handle: player.userHandle });
+        client.emit('set_handle', {
+            'user_handle': player.userHandle,
+        });
     });
 
     client.on('pollute', async data => {
@@ -132,7 +134,9 @@ io.on('connection', client => {
             world.players[userID].userHandle = userHandle;
 
             // Update client
-            client.emit('set_handle', { user_handle: userHandle });
+            client.emit('set_handle', {
+                'user_handle': userHandle,
+            });
             io.in(roomName).emit('sync', world.getState());
         }
     });
