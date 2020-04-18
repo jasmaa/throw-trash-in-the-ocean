@@ -73,7 +73,7 @@ io.on('connection', client => {
         const player = await Player.createOrGet(userInfo, world.roomID);
 
         // Log join
-        const joinEvent = await Event.createJoin(userInfo, world.roomID);
+        const joinEvent = await Event.createEvent(world.roomID, player.userID, 'join');
 
         // Update cache
         world.players[player.userID] = player;

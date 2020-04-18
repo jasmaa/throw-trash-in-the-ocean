@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import ReactTooltip from 'react-tooltip';
 
+import EventLog from 'src/components/EventLog';
+
 /**
  * Paint noise as map
  * @param {*} ctx 
@@ -55,18 +57,6 @@ const MapPanel = (props) => {
 
   const player = props.syncData.players[props.userID];
 
-  const renderEvents = () => {
-    const events = [];
-    for (const event of props.syncData.events) {
-      events.push(
-        <li className="list-group-item" key={event.event_timestamp}>
-          {`${event['event_timestamp']} - ${event['event_description']}`}
-        </li>
-      );
-    }
-    return events;
-  }
-
   return (
     <div className="card">
       <div className="card-body">
@@ -99,9 +89,7 @@ const MapPanel = (props) => {
         </div>
         <ReactTooltip />
 
-        <ul className="list-group">
-          {renderEvents()}
-        </ul>
+        <EventLog events={props.syncData.events} players={props.syncData.players} />
 
       </div>
     </div >

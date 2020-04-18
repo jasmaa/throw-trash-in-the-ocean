@@ -93,28 +93,17 @@ const Player = {
  */
 const Event = {
 
-    async createJoin(userInfo, roomID) {
-        await pool.query(
-            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
-            [roomID, 'join', `${userInfo.userHandle} has joined!`],
-        );
-        return {
-            roomID: roomID,
-            eventType: 'join',
-            eventDescription: `${userInfo.userHandle} has joined!`,
-            eventTimestamp: Date.now(),
-        };
-    },
+    async createEvent(roomID, userID, eventType) {
 
-    async createLeave(userInfo, roomID) {
         await pool.query(
-            `INSERT INTO events (room_id, event_type, event_description, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
-            [roomID, 'leave', `${userInfo.userHandle} has left`],
+            `INSERT INTO events (room_id, user_id, event_type, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
+            [roomID, userID, eventType],
         );
+        
         return {
             roomID: roomID,
-            eventType: 'leave',
-            eventDescription: `${userInfo.userHandle} has left`,
+            userID: userID,
+            eventType: eventType,
             eventTimestamp: Date.now(),
         };
     },

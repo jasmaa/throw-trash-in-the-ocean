@@ -24,7 +24,7 @@ CREATE TYPE room_event AS ENUM ('join', 'leave', 'pollute', 'chat');
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL,
+    user_id VARCHAR(255),
     event_type room_event,
-    event_description VARCHAR(255) NOT NULL,
     event_timestamp TIMESTAMP WITHOUT TIME ZONE
 );

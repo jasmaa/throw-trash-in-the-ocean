@@ -79,8 +79,8 @@ class World {
         this.events = eventRes.rows.map(v => {
             return {
                 roomID: v['room_id'],
+                userID: v['user_id'],
                 eventType: v['event_type'],
-                eventDescription: v['event_description'],
                 eventTimestamp: Date.parse(v['event_timestamp']),
             }
         });
@@ -131,8 +131,8 @@ class World {
                 .map(v => {
                     return {
                         'room_id': v.roomID,
+                        'user_id': v.userID,
                         'event_type': v.eventType,
-                        'event_description': v.eventDescription,
                         'event_timestamp': v.eventTimestamp,
                     }
                 }),
