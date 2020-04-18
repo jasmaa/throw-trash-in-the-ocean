@@ -1,6 +1,5 @@
 // server.js
 // Main express app
-
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -40,7 +39,7 @@ setInterval(async () => {
         if (world) {
             world.update();
             await world.save();
-            io.in(roomName).emit('sync', world.getStat());
+            io.in(roomName).emit('sync', world.getState());
         } else {
             newWorld = new World(roomName);
             await newWorld.readOrCreate();
@@ -85,7 +84,7 @@ io.on('connection', client => {
             user_id: player.userID,
             user_handle: player.userHandle,
         });
-        client.emit('sync', world.getStat());
+        client.emit('sync', world.getState());
         client.emit('set_handle', { user_handle: player.userHandle });
     });
 
@@ -117,7 +116,7 @@ io.on('connection', client => {
         world.players[userID].profit = currProfit;
 
         // Update client
-        io.in(roomName).emit('sync', world.getStat());
+        io.in(roomName).emit('sync', world.getState());
     });
 
     client.on('set_handle', async data => {
@@ -134,7 +133,7 @@ io.on('connection', client => {
 
             // Update client
             client.emit('set_handle', { user_handle: userHandle });
-            io.in(roomName).emit('sync', world.getStat());
+            io.in(roomName).emit('sync', world.getState());
         }
     });
 
@@ -158,7 +157,7 @@ io.on('connection', client => {
             world.players[userID].powerClickLevel = currClickLevel;
 
             // Update client
-            io.in(roomName).emit('sync', world.getStat());
+            io.in(roomName).emit('sync', world.getState());
         }
     });
 });

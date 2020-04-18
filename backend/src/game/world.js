@@ -76,8 +76,14 @@ class World {
             `SELECT * FROM events WHERE room_id=$1 ORDER BY event_timestamp DESC LIMIT 10`,
             [this.roomID],
         );
-        eventRes.rows.forEach(data => data.event_timestamp = Date.parse(data.event_timestamp));
-        this.events = eventRes.rows;
+        this.events = eventRes.rows.map(v => {
+            return {
+                roomID: v['room_id'],
+                eventType: v['event_type'],
+                eventDescription: v['event_description'],
+                eventTimestamp: Date.parse(v['event_timestamp']),
+            }
+        });
     }
 
     /**
@@ -107,7 +113,7 @@ class World {
     /**
      * Get world statistics
      */
-    getStat() {
+    getState() {
 
         const players = JSON.parse(JSON.stringify(this.players));
         for (const userID in players) {
@@ -116,10 +122,20 @@ class World {
             player.powerClickCost = level2cost(player.powerClickLevel);
         }
 
+        // Build JSON response
         return {
             health: MAX_HEALTH - this.pollutionLevel,
             players: players,
-            events: this.events.slice(0, 10),
+            events: this.events
+                .slice(0, 10)
+                .map(v => {
+                    return {
+                        'room_id': v.roomID,
+                        'event_type': v.eventType,
+                        'event_description': v.eventDescription,
+                        'event_timestamp': v.eventTimestamp,
+                    }
+                }),
         }
     }
 }

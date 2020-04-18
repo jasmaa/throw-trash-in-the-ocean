@@ -99,10 +99,10 @@ const Event = {
             [roomID, 'join', `${userInfo.userHandle} has joined!`],
         );
         return {
-            room_id: roomID,
-            event_type: 'join',
-            event_description: `${userInfo.userHandle} has joined!`,
-            event_timestamp: Date.now(),
+            roomID: roomID,
+            eventType: 'join',
+            eventDescription: `${userInfo.userHandle} has joined!`,
+            eventTimestamp: Date.now(),
         };
     },
 
@@ -112,10 +112,10 @@ const Event = {
             [roomID, 'leave', `${userInfo.userHandle} has left`],
         );
         return {
-            room_id: roomID,
-            event_type: 'leave',
-            event_description: `${userInfo.userHandle} has left`,
-            event_timestamp: Date.now(),
+            roomID: roomID,
+            eventType: 'leave',
+            eventDescription: `${userInfo.userHandle} has left`,
+            eventTimestamp: Date.now(),
         };
     },
 }
