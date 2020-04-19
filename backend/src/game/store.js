@@ -2,7 +2,7 @@
 // Interface with DB
 
 const pool = require('../config/dbConfig');
-const { getRandomValue } = require('../utils');
+const { getRandomValue, getRandomName } = require('../utils');
 
 /**
  * User
@@ -15,7 +15,7 @@ const User = {
 
         if (res.rowCount <= 0) {
             userID = getRandomValue(30);
-            userHandle = `awesome-user-${getRandomValue(5)}`; //TODO: generate new user handle here
+            userHandle = getRandomName();
 
             await pool.query(
                 `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
