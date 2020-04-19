@@ -37,10 +37,6 @@ export default class Client {
             document.cookie = `user_id=${this.userID}`;
         });
 
-        this.socket.on('pollute', data => {
-            this.updateHandler(data);
-        });
-
         this.socket.on('set_handle', data => {
             this.userHandle = data['user_handle'];
         });

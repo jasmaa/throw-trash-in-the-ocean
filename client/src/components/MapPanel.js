@@ -42,6 +42,8 @@ const paintMap = (ctx, size, noise) => {
   ctx.putImageData(imgData, 0, 0);
 }
 
+const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10); // TODO: replace me later
+
 
 const MapPanel = (props) => {
 
@@ -51,8 +53,10 @@ const MapPanel = (props) => {
     const ctx = canvas.getContext('2d');
     paintMap(ctx, props.mapSize, props.noise);
 
-    ctx.fillStyle = 'red';
-    ctx.fillRect(props.mapSize * Math.random(), props.mapSize * Math.random(), 10, 10);
+    props.syncData.trash.forEach(v => {
+      ctx.globalAlpha = fade(v.ttl / v.totalTTL);
+      ctx.drawImage(document.getElementById(`trash${v.trashType}`), v.x, v.y)
+    });
   }
 
   const player = props.syncData.players[props.userID];
@@ -90,6 +94,11 @@ const MapPanel = (props) => {
 
         <EventLog events={props.syncData.events} players={props.syncData.players} />
       </div>
+
+      <img id="trash0" width="16" height="16" src="trash0000.png" hidden />
+      <img id="trash1" width="16" height="16" src="trash0001.png" hidden />
+      <img id="trash2" width="16" height="16" src="trash0002.png" hidden />
+      <img id="trash3" width="16" height="16" src="trash0003.png" hidden />
       <ReactTooltip />
     </div >
   );

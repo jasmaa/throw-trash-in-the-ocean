@@ -18,6 +18,7 @@ class World {
         this.isDead = false;
         this.players = {};
         this.events = [];
+        this.trash = [];
     }
 
     /**
@@ -88,9 +89,21 @@ class World {
 
     /**
      * Update world
+     * @param {Number} dt
      */
-    update() {
-        this.recover(30);
+    update(dt) {
+
+        const factor = 0.001 * dt;
+
+        this.recover(factor * 30);
+
+        // Update trash
+        for (let i = 0; i < this.trash.length; i++) {
+            this.trash[i].ttl -= factor;
+            if (this.trash[i].ttl <= 0) {
+                this.trash.splice(i, 1);
+            }
+        }
     }
 
     /**
@@ -99,6 +112,15 @@ class World {
      */
     pollute(n) {
         this.pollutionLevel += n;
+        for (let i = 0; i < n; i++) {
+            this.trash.push({
+                x: Math.floor(500 * Math.random()),
+                y: Math.floor(500 * Math.random()),
+                trashType: Math.floor(4 * Math.random()),
+                ttl: 10,
+                totalTTL: 10,
+            });
+        }
     }
 
     /**
@@ -127,6 +149,7 @@ class World {
             'health': MAX_HEALTH - this.pollutionLevel,
             'players': players,
             'events': this.events.slice(0, 10),
+            'trash': this.trash,
         }
     }
 }

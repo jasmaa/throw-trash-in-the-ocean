@@ -1,5 +1,7 @@
 # Throw Trash in the Ocean
 
+![Example map with trash](docs/canvas.png)
+
 WIP multiplayer ocean trashing simulation
 
 Made for my DCC Capstone

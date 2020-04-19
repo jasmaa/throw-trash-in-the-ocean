@@ -18,6 +18,7 @@ app.use(cors());
 
 // === Game ===
 const THROTTLE_TIME = 100;
+const UPDATE_TIME = 1000;
 
 const activeRooms = new Set();
 const worlds = {};
@@ -37,7 +38,7 @@ setInterval(async () => {
 
         // Update or init room
         if (world) {
-            world.update();
+            world.update(UPDATE_TIME);
             await world.save();
             io.in(roomName).emit('sync', world.getState());
         } else {
@@ -46,7 +47,7 @@ setInterval(async () => {
             worlds[roomName] = newWorld;
         }
     }
-}, 1000);
+}, UPDATE_TIME);
 
 // Socket handlers
 io.on('connection', client => {
@@ -118,6 +119,7 @@ io.on('connection', client => {
         world.players[userID].profit = currProfit;
 
         // Update client
+        io.in(roomName).emit('pollute');
         io.in(roomName).emit('sync', world.getState());
     });
 
