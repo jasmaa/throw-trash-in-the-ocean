@@ -27,8 +27,8 @@ class World {
      */
     async save() {
         await pool.query(
-            `UPDATE rooms SET pollution_level=$2, is_dead=$3 WHERE room_name=$1`,
-            [this.roomName, this.pollutionLevel, this.isDead],
+            `UPDATE rooms SET pollution_level=$2, is_dead=$3, destroyed_timestamp=(to_timestamp($4 / 1000.0)) WHERE room_name=$1`,
+            [this.roomName, this.pollutionLevel, this.isDead, this.destroyedTimestamp.valueOf()],
         );
     }
 
@@ -43,17 +43,18 @@ class World {
         // Create if doesn't exist
         if (res.rowCount <= 0) {
             await pool.query(
-                `INSERT INTO rooms (room_name, pollution_level, is_dead) VALUES ($1, $2, $3)`,
+                `INSERT INTO rooms (room_name, pollution_level, is_dead, created_timestamp, destroyed_timestamp) VALUES ($1, $2, $3, NOW()::timestamp, NOW()::timestamp)`,
                 [this.roomName, 0, false],
             );
             res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
-
         }
 
         const worldData = res.rows[0];
         this.roomID = worldData['room_id'];
         this.pollutionLevel = worldData['pollution_level'];
         this.isDead = worldData['is_dead'];
+        this.createdTimestamp = worldData['created_timestamp'];
+        this.destroyedTimestamp = worldData['destroyed_timestamp'];
 
         // Init player cache
         const playerRes = await pool.query(
@@ -133,6 +134,21 @@ class World {
     }
 
     /**
+     * Kill world
+     */
+    kill() {
+        this.isDead = true;
+        this.destroyedTimestamp = new Date();
+    }
+
+    /**
+     * Gets world health
+     */
+    getHealth() {
+        return MAX_HEALTH - this.pollutionLevel;
+    }
+
+    /**
      * Get world statistics
      */
     getState() {
@@ -145,11 +161,20 @@ class World {
         }
 
         // Build JSON response
-        return {
-            'health': MAX_HEALTH - this.pollutionLevel,
-            'players': players,
-            'events': this.events.slice(0, 10),
-            'trash': this.trash,
+        if (this.isDead) {
+            return {
+                isDead: true,
+                createdTimestamp: this.createdTimestamp,
+                destroyedTimestamp: this.destroyedTimestamp,
+            }
+        } else {
+            return {
+                isDead: false,
+                health: this.getHealth(),
+                players: players,
+                events: this.events.slice(0, 10),
+                trash: this.trash,
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ const ControlPanel = (props) => {
   useEffect(() => {
 
     // Canvas updater
-    setInterval(() => {
+    const canvasUpdater = setInterval(() => {
 
       setParticles(prevState => {
         for (const p of prevState) {
@@ -40,6 +40,11 @@ const ControlPanel = (props) => {
       if (clickCooldown > 0) clickCooldown -= UPDATE_TIME;
 
     }, UPDATE_TIME);
+
+    return function cleanup() {
+      clearInterval(canvasUpdater);
+    }
+
   }, []);
 
   const mouseDownHandler = e => {

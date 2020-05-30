@@ -73,22 +73,26 @@ io.on('connection', client => {
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
 
-        // Log join
-        const joinEvent = await Event.createEvent(world.roomID, player.userID, 'join');
+        if (!world.isDead) {
+            // Log join
+            const joinEvent = await Event.createEvent(world.roomID, player.userID, 'join');
 
-        // Update cache
-        world.players[player.userID] = player;
-        world.events.unshift(joinEvent);
+            // Update cache
+            world.players[player.userID] = player;
+            world.events.unshift(joinEvent);
 
-        // Update client
-        client.emit('join', {
-            user_id: player.userID,
-            user_handle: player.userHandle,
-        });
+            // Update client
+            client.emit('join', {
+                user_id: player.userID,
+                user_handle: player.userHandle,
+            });
+            client.emit('set_handle', {
+                'user_handle': player.userHandle,
+            });
+        }
+
         client.emit('sync', world.getState());
-        client.emit('set_handle', {
-            'user_handle': player.userHandle,
-        });
+
     });
 
     client.on('pollute', async data => {
@@ -96,6 +100,11 @@ io.on('connection', client => {
         const userID = data['user_id'];
         const roomName = data['room_name'];
         const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
 
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
@@ -111,12 +120,23 @@ io.on('connection', client => {
 
         // Update world
         world.pollute(1);
-        await world.save();
 
-        // Save user profit
-        const currProfit = player.profit + level2profit(player.powerClickLevel);
-        await Player.updateProfit(userID, world.roomID, currProfit);
-        world.players[userID].profit = currProfit;
+        if (world.getHealth() <= 0) {
+
+            // Destroy world if over-polluted
+            world.kill();
+            await world.save();
+
+
+        } else {
+
+            await world.save();
+
+            // Save user profit
+            const currProfit = player.profit + level2profit(player.powerClickLevel);
+            await Player.updateProfit(userID, world.roomID, currProfit);
+            world.players[userID].profit = currProfit;
+        }
 
         // Update client
         io.in(roomName).emit('pollute');
@@ -129,6 +149,11 @@ io.on('connection', client => {
         const userHandle = data['user_handle'];
         const roomName = data['room_name'];
         const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
 
         if (userHandle.length <= 30) {
             // Update user
@@ -148,6 +173,11 @@ io.on('connection', client => {
         const userID = data['user_id'];
         const roomName = data['room_name'];
         const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
 
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);

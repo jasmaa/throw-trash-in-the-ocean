@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import DeadScreen from 'src/screens/Dead';
 import ControlPanel from 'src/components/ControlPanel';
 import MapPanel from 'src/components/MapPanel';
 import Loading from 'src/components/Loading';
@@ -27,7 +28,9 @@ const GameScreen = (props) => {
     }, []);
 
     // Stall until has user handle
-    if (client == undefined || client.userHandle == undefined) return <Loading />;
+    if (client === undefined) return <Loading />;
+    if (syncData.isDead) return <DeadScreen roomName={props.roomName} syncData={syncData}/>;
+    if (client.userHandle === undefined) return <Loading />;
 
     return (
         <div className="container-fluid p-5">

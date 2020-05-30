@@ -3,7 +3,9 @@ CREATE TABLE rooms (
     room_id SERIAL PRIMARY KEY,
     room_name VARCHAR(255) NOT NULL UNIQUE,
     pollution_level INTEGER,
-    is_dead BOOLEAN
+    is_dead BOOLEAN,
+    created_timestamp TIMESTAMP WITHOUT TIME ZONE,
+    destroyed_timestamp TIMESTAMP WITHOUT TIME ZONE
 );
 
 CREATE TABLE players (
