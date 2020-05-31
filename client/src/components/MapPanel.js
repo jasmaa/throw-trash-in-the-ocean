@@ -4,13 +4,43 @@ import ReactTooltip from 'react-tooltip';
 import EventLog from 'src/components/EventLog';
 import { fade } from 'src/utils';
 
+const mapThemes = [
+  {
+    snow: [0xFF, 0xFF, 0xFF],
+    rock: [0x99, 0x99, 0x99],
+    grass: [0x2c, 0xb0, 0x37],
+    sand: [0xED, 0xC9, 0xAF],
+    water: [0x00, 0x00, 0xFF],
+  },
+  {
+    snow: [0xFF, 0xFF, 0xFF],
+    rock: [0x99, 0x99, 0x99],
+    grass: [0x2c, 0xb0, 0x37],
+    sand: [0xED, 0xC9, 0xAF],
+    water: [0x00, 0x00, 0xFF],
+  },
+  {
+    snow: [0x99, 0x99, 0x99],
+    rock: [0x99, 0x99, 0x99],
+    grass: [0x99, 0x66, 0x00],
+    sand: [0xED, 0xC9, 0xAF],
+    water: [0x99, 0x99, 0x66],
+  }
+];
+
+const progressbarThemes = [
+  '#33cc33',
+  '#ff9933',
+  '#ff3300',
+];
+
 /**
  * Paint noise as map
  * @param {*} ctx 
  * @param {*} size 
  * @param {*} noise 
  */
-const paintMap = (ctx, size, noise) => {
+const paintMap = (ctx, size, noise, theme) => {
   const imgData = ctx.getImageData(0, 0, size, size);
   const buffer = imgData.data;
 
@@ -22,20 +52,21 @@ const paintMap = (ctx, size, noise) => {
     buffer[size * 4 * r + 4 * c + 3] = 255;
   }
 
+  // Paint pixels
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const v = Math.floor(256 * noise[size * i + j]);
 
       if (v > 200) {
-        setValue(i, j, [0xFF, 0xFF, 0xFF]);
+        setValue(i, j, theme.snow);
       } else if (v > 170) {
-        setValue(i, j, [0x99, 0x99, 0x99]);
+        setValue(i, j, theme.rock);
       } else if (v > 140) {
-        setValue(i, j, [0x2c, 0xb0, 0x37]);
+        setValue(i, j, theme.grass);
       } else if (v > 130) {
-        setValue(i, j, [0xED, 0xC9, 0xAF]);
+        setValue(i, j, theme.sand);
       } else {
-        setValue(i, j, [0x00, 0x00, 0xFF]);
+        setValue(i, j, theme.water);
       }
     }
   }
@@ -46,11 +77,17 @@ const paintMap = (ctx, size, noise) => {
 
 const MapPanel = (props) => {
 
+  const deathLevel = props.syncData.health > 60
+    ? 0
+    : props.syncData.health > 30
+      ? 1
+      : 2;
+
   const canvasRef = useRef(null);
   const canvas = canvasRef.current;
   if (canvas != undefined) {
     const ctx = canvas.getContext('2d');
-    paintMap(ctx, props.mapSize, props.noise);
+    paintMap(ctx, props.mapSize, props.noise, mapThemes[deathLevel]);
 
     props.syncData.trash.forEach(v => {
       ctx.globalAlpha = fade(v.ttl / v.totalTTL);
@@ -65,7 +102,14 @@ const MapPanel = (props) => {
       <div className="card-body">
 
         <div className="progress m-3">
-          <div className="progress-bar" role="progressbar" style={{ width: `${props.syncData.health}%` }}></div>
+          <div
+            className="progress-bar"
+            role="progressbar"
+            style={{
+              width: `${props.syncData.health}%`,
+              backgroundColor: progressbarThemes[deathLevel],
+            }}>
+          </div>
         </div>
 
         <div className="row m-5">
