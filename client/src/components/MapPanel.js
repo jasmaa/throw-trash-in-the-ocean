@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import ReactTooltip from 'react-tooltip';
 
 import EventLog from 'src/components/EventLog';
+import { fade } from 'src/utils';
 
 /**
  * Paint noise as map
@@ -41,8 +42,6 @@ const paintMap = (ctx, size, noise) => {
 
   ctx.putImageData(imgData, 0, 0);
 }
-
-const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10); // TODO: replace me later
 
 
 const MapPanel = (props) => {

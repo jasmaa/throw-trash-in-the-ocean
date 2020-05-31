@@ -6,8 +6,7 @@ import MapPanel from 'src/components/MapPanel';
 import Loading from 'src/components/Loading';
 import Client from 'src/game/client';
 import { generatePerlin } from 'src/utils';
-
-const crypto = require('crypto');
+import * as crypto from 'crypto';
 
 let client;
 let noise;

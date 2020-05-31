@@ -2,8 +2,16 @@
 // Map generation using perlin noise
 // Adapted from https://flafla2.github.io/2014/08/09/perlinnoise.html
 
+import { lerp, fade } from 'src/utils';
+
 let p;
-const generatePerm = (seed) => {
+
+/**
+ * Generates permutation from seed
+ * 
+ * @param {*} seed 
+ */
+function generatePerm(seed) {
     const xorshift32 = () => {
         seed ^= seed << 13;
         seed ^= seed >> 17;
@@ -18,11 +26,15 @@ const generatePerm = (seed) => {
     p = p.concat(p);
 }
 
-const lerp = (a, b, t) => a + (b - a) * t;
-
-const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
-
-const grad = (hash, x, y, z) => {
+/**
+ * Finds gradient for Perlin noise
+ * 
+ * @param {*} hash 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} z 
+ */
+function grad(hash, x, y, z) {
     switch (hash & 0xF) {
         case 0x0: return x + y;
         case 0x1: return -x + y;
@@ -44,7 +56,14 @@ const grad = (hash, x, y, z) => {
     }
 }
 
-const perlin = (x, y, z) => {
+/**
+ * Perlin noise function
+ * 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} z 
+ */
+function perlin(x, y, z) {
 
     const xi = Math.floor(x) & 0xFFFFFF;
     const yi = Math.floor(y) & 0xFFFFFF;
@@ -80,7 +99,13 @@ const perlin = (x, y, z) => {
     return (lerp(y1, y2, w) + 1) / 2;
 }
 
-const generatePerlin = (size, seed) => {
+/**
+ * Generates Perlin noise from size and seed
+ * 
+ * @param {*} size 
+ * @param {*} seed 
+ */
+export function generatePerlin(size, seed) {
 
     const buffer = Array(size * size);
     generatePerm(seed);
@@ -101,14 +126,10 @@ const generatePerlin = (size, seed) => {
                 amplitude *= 0.4;
                 frequency *= 2;
             }
-            
+
             buffer[size * i + j] = total / maxValue;
         }
     }
 
     return buffer;
-}
-
-module.exports = {
-    generatePerlin: generatePerlin,
 }

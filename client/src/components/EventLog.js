@@ -1,4 +1,5 @@
 import React from 'react';
+import * as moment from 'moment';
 
 const MapPanel = (props) => {
 
@@ -7,6 +8,7 @@ const MapPanel = (props) => {
         for (const event of props.events) {
 
             const eventPlayer = props.players[event.userID];
+            const eventTimestampStr = moment(event.eventTimestamp).format('LLL');
 
             var eventDescription;
             switch (event.eventType) {
@@ -23,7 +25,7 @@ const MapPanel = (props) => {
 
             events.push(
                 <li className="list-group-item">
-                    {`${event.eventTimestamp} - ${eventDescription}`}
+                    {`${eventTimestampStr} - ${eventDescription}`}
                 </li>
             );
         }

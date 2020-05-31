@@ -6,7 +6,7 @@
  * @param {*} size 
  * @param {*} seed 
  */
-const diamondSquare = (size, seed) => {
+export const diamondSquare = (size, seed) => {
     const buffer = Array(size * size);
     let currSize = size - 1;
 
@@ -86,8 +86,4 @@ const diamondSquare = (size, seed) => {
     }
 
     return buffer;
-}
-
-module.exports = {
-    diamondSquare: diamondSquare,
 }
