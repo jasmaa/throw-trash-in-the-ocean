@@ -18,7 +18,7 @@ app.use(cors());
 
 // === Game ===
 const THROTTLE_TIME = 100;
-const UPDATE_TIME = 1000;
+const UPDATE_TIME = 5000;
 
 const activeRooms = new Set();
 const worlds = {};

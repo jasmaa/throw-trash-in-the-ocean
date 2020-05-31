@@ -3,6 +3,7 @@ CREATE TABLE rooms (
     room_id SERIAL PRIMARY KEY,
     room_name VARCHAR(255) NOT NULL UNIQUE,
     pollution_level INTEGER,
+    total_pollution INTEGER,
     is_dead BOOLEAN,
     created_timestamp TIMESTAMP WITHOUT TIME ZONE,
     destroyed_timestamp TIMESTAMP WITHOUT TIME ZONE
@@ -30,3 +31,6 @@ CREATE TABLE events (
     event_type room_event,
     event_timestamp TIMESTAMP WITHOUT TIME ZONE
 );
+
+INSERT INTO rooms (room_name, pollution_level, total_pollution, is_dead, created_timestamp, destroyed_timestamp)
+VALUES ('dead', 0, 300, TRUE, NOW()::timestamp, NOW()::timestamp)

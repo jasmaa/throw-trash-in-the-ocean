@@ -15,6 +15,7 @@ class World {
         this.roomName = roomName;
         this.roomID = null;
         this.pollutionLevel = 0;
+        this.totalPollution = 0;
         this.isDead = false;
         this.players = {};
         this.events = [];
@@ -27,8 +28,8 @@ class World {
      */
     async save() {
         await pool.query(
-            `UPDATE rooms SET pollution_level=$2, is_dead=$3, destroyed_timestamp=(to_timestamp($4 / 1000.0)) WHERE room_name=$1`,
-            [this.roomName, this.pollutionLevel, this.isDead, this.destroyedTimestamp.valueOf()],
+            `UPDATE rooms SET pollution_level=$2, total_pollution=$3, is_dead=$4, destroyed_timestamp=(to_timestamp($5 / 1000.0)) WHERE room_name=$1`,
+            [this.roomName, this.pollutionLevel, this.totalPollution, this.isDead, this.destroyedTimestamp.valueOf()],
         );
     }
 
@@ -43,8 +44,8 @@ class World {
         // Create if doesn't exist
         if (res.rowCount <= 0) {
             await pool.query(
-                `INSERT INTO rooms (room_name, pollution_level, is_dead, created_timestamp, destroyed_timestamp) VALUES ($1, $2, $3, NOW()::timestamp, NOW()::timestamp)`,
-                [this.roomName, 0, false],
+                `INSERT INTO rooms (room_name, pollution_level, total_pollution, is_dead, created_timestamp, destroyed_timestamp) VALUES ($1, $2, $3, $4, NOW()::timestamp, NOW()::timestamp)`,
+                [this.roomName, 0, 0, false],
             );
             res = await pool.query(`SELECT * FROM rooms WHERE room_name=$1`, [this.roomName]);
         }
@@ -52,6 +53,7 @@ class World {
         const worldData = res.rows[0];
         this.roomID = worldData['room_id'];
         this.pollutionLevel = worldData['pollution_level'];
+        this.totalPollution = worldData['total_pollution']
         this.isDead = worldData['is_dead'];
         this.createdTimestamp = worldData['created_timestamp'];
         this.destroyedTimestamp = worldData['destroyed_timestamp'];
@@ -83,7 +85,7 @@ class World {
                 roomID: v['room_id'],
                 userID: v['user_id'],
                 eventType: v['event_type'],
-                eventTimestamp: Date.parse(v['event_timestamp']),
+                eventTimestamp: v['event_timestamp'],
             }
         });
     }
@@ -113,6 +115,8 @@ class World {
      */
     pollute(n) {
         this.pollutionLevel += n;
+        this.totalPollution += n;
+
         for (let i = 0; i < n; i++) {
             this.trash.push({
                 x: Math.floor(500 * Math.random()),
@@ -164,6 +168,8 @@ class World {
         if (this.isDead) {
             return {
                 isDead: true,
+                players: players,
+                totalPollution: this.totalPollution,
                 createdTimestamp: this.createdTimestamp,
                 destroyedTimestamp: this.destroyedTimestamp,
             }

@@ -104,7 +104,7 @@ const Event = {
             roomID: roomID,
             userID: userID,
             eventType: eventType,
-            eventTimestamp: Date.now(),
+            eventTimestamp: new Date(),
         };
     },
 }
