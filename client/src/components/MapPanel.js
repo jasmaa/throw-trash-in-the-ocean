@@ -72,6 +72,7 @@ const MapPanel = (props) => {
           <div className="col">
             <canvas
               ref={canvasRef}
+              className="map-canvas"
               width={props.mapSize}
               height={props.mapSize}
             />

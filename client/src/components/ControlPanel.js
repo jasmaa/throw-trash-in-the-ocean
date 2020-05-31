@@ -98,7 +98,7 @@ const ControlPanel = (props) => {
 
     // Render button
     if (isClickerUp) {
-      ctx.shadowColor = 'darkRed';
+      ctx.shadowColor = 'darkred';
       ctx.shadowOffsetY = 10;
     }
     ctx.lineWidth = 1.5;
@@ -125,10 +125,11 @@ const ControlPanel = (props) => {
 
   return (
     <div className="card">
+      <div class="card-header">
+        <h3>World: {props.roomName}</h3>
+      </div>
       <div className="card-body">
         <div className="d-flex flex-column">
-
-          <h3>World: {props.roomName}</h3>
 
           <center style={{ minHeight: '20em' }}>
             <canvas
@@ -142,7 +143,7 @@ const ControlPanel = (props) => {
 
           <input
             type="text"
-            className="form-control"
+            className="form-control my-3"
             maxLength="30"
             value={userHandle}
             onChange={e => {

@@ -27,3 +27,43 @@
 .control-widget {
   z-index: 9000;
 }
+
+.map-canvas {
+  border-style: solid;
+  border-width: 0.1em;
+  border-radius: 1%;
+  border-color: silver;
+}
+
+.card {
+  color: white;
+  border-color: silver;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.card-header {
+  color: white;
+  border-color: silver;
+  background-color: inherit;
+}
+
+.list-group-item {
+  color: white;
+  border-color: silver;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.table {
+  color: white;
+  border-color: inherit;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-image: linear-gradient(lightslategray, black);
+}
