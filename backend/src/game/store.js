@@ -100,9 +100,7 @@ const Event = {
             [roomID, userID, eventType, content],
         );
 
-        if (res.rowCount != 1) {
-            return;
-        }
+        if (res.rowCount !== 1) return;
 
         return {
             eventID: res.rows[0]['event_id'],

@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactTooltip from 'react-tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 import EventLog from 'src/components/EventLog';
 import { fade } from 'src/utils';
@@ -95,6 +97,8 @@ const MapPanel = (props) => {
     });
   }
 
+  const [message, setMessage] = useState('');
+
   const player = props.syncData.players[props.userID];
 
   return (
@@ -133,6 +137,32 @@ const MapPanel = (props) => {
                 <span className="badge badge-primary badge-pill">+</span>
               </li>
             </ul>
+          </div>
+        </div>
+
+        <div className="input-group my-3">
+          <input
+            type="text"
+            className="form-control"
+            maxLength="200"
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            onKeyPress={e => {
+              if (e.charCode === 13 && message.length > 0) {
+                props.sendChatHandler(message);
+                setMessage('');
+              }
+            }}
+          />
+          <div className="input-group-append">
+            <div className="btn btn-info" type="button" onClick={() => {
+              if (message.length > 0) {
+                props.sendChatHandler(message);
+                setMessage('');
+              }
+            }}>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </div>
           </div>
         </div>
 

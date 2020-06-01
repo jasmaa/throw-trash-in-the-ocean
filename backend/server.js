@@ -200,7 +200,6 @@ io.on('connection', client => {
     client.on('chat', async data => {
 
         const userID = data['userID'];
-        const userHandle = data['userHandle'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
@@ -212,7 +211,9 @@ io.on('connection', client => {
         const content = data['content'];
 
         if (content.length <= 200) {
-            console.log(content);
+            const chatEvent = await Event.createEvent(world.roomID, userID, 'chat', content);
+            world.events.unshift(chatEvent);
+            io.in(roomName).emit('sync', world.getState());
         }
     })
 });

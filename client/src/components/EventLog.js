@@ -4,6 +4,7 @@ import * as moment from 'moment';
 const MapPanel = (props) => {
 
     const renderEvents = () => {
+
         const events = [];
         for (const event of props.events) {
 
@@ -13,10 +14,25 @@ const MapPanel = (props) => {
             var eventDescription;
             switch (event.eventType) {
                 case 'join':
-                    eventDescription = `${eventPlayer.userHandle} has joined the room`;
+                    eventDescription = (
+                        <span>
+                            <strong>{eventPlayer.userHandle}</strong>
+                            {' has joined the room'}
+                        </span>
+                    );
                     break;
                 case 'leave':
-                    eventDescription = `${eventPlayer.userHandle} has left the room`;
+                    eventDescription = <span>
+                        <strong>{eventPlayer.userHandle}</strong>
+                        {' has left the room'}
+                    </span>;
+                    break;
+                case 'chat':
+                    eventDescription = <span>
+                        <strong>{eventPlayer.userHandle}</strong>
+                        {`: `}
+                        <span style={{ color: 'orange' }}>{event.content}</span>
+                    </span>;
                     break;
                 default:
                     eventDescription = 'Error';
@@ -25,7 +41,7 @@ const MapPanel = (props) => {
 
             events.push(
                 <li className="list-group-item" key={event.eventID}>
-                    {`${eventTimestampStr} - ${eventDescription}`}
+                    {eventTimestampStr} - {eventDescription}
                 </li>
             );
         }

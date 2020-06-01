@@ -28,7 +28,7 @@ const GameScreen = (props) => {
 
     // Stall until has user handle
     if (client === undefined) return <Loading />;
-    if (syncData.isDead) return <DeadScreen roomName={props.roomName} syncData={syncData}/>;
+    if (syncData.isDead) return <DeadScreen roomName={props.roomName} syncData={syncData} />;
     if (client.userHandle === undefined) return <Loading />;
 
     return (
@@ -42,6 +42,7 @@ const GameScreen = (props) => {
                         mapSize={mapSize}
 
                         upgradeClickHandler={() => client.upgradeClick()}
+                        sendChatHandler={content => client.chat(content)}
                     />
                 </div>
                 <div className="col-lg-4">
