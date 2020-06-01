@@ -28,6 +28,7 @@ CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL,
     user_id VARCHAR(255),
+    content VARCHAR(255),
     event_type room_event,
     event_timestamp TIMESTAMP WITHOUT TIME ZONE
 );

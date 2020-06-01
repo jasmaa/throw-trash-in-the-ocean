@@ -24,7 +24,7 @@ const MapPanel = (props) => {
             }
 
             events.push(
-                <li className="list-group-item">
+                <li className="list-group-item" key={event.eventID}>
                     {`${eventTimestampStr} - ${eventDescription}`}
                 </li>
             );

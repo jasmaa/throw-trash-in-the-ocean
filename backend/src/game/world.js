@@ -82,6 +82,7 @@ class World {
         );
         this.events = eventRes.rows.map(v => {
             return {
+                eventID: v['event_id'],
                 roomID: v['room_id'],
                 userID: v['user_id'],
                 eventType: v['event_type'],

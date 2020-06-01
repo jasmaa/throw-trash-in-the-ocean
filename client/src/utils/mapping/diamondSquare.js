@@ -58,7 +58,7 @@ export const diamondSquare = (size, seed) => {
         for (let i = 0; i < size; i += currSize) {
             for (let j = 0; j < size; j += currSize) {
 
-                if (buffer[size * i + j] == undefined) {
+                if (buffer[size * i + j] === undefined) {
                     let n = 0;
                     let s = 0;
 

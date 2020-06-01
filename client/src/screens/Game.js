@@ -24,7 +24,7 @@ const GameScreen = (props) => {
         // Generate map
         const hash = crypto.createHash('md5').update(props.roomName).digest('hex');
         noise = generatePerlin(mapSize, parseInt(hash, 16) % 0xFFFFFFFF);
-    }, []);
+    }, [props.roomName]);
 
     // Stall until has user handle
     if (client === undefined) return <Loading />;

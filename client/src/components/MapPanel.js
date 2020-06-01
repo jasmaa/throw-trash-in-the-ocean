@@ -85,7 +85,7 @@ const MapPanel = (props) => {
 
   const canvasRef = useRef(null);
   const canvas = canvasRef.current;
-  if (canvas != undefined) {
+  if (canvas) {
     const ctx = canvas.getContext('2d');
     paintMap(ctx, props.mapSize, props.noise, mapThemes[deathLevel]);
 
@@ -139,10 +139,10 @@ const MapPanel = (props) => {
         <EventLog events={props.syncData.events} players={props.syncData.players} />
       </div>
 
-      <img id="trash0" width="16" height="16" src="trash0000.png" hidden />
-      <img id="trash1" width="16" height="16" src="trash0001.png" hidden />
-      <img id="trash2" width="16" height="16" src="trash0002.png" hidden />
-      <img id="trash3" width="16" height="16" src="trash0003.png" hidden />
+      <img id="trash0" alt="Trash sprite 0" width="16" height="16" src="trash0000.png" hidden />
+      <img id="trash1" alt="Trash sprite 1" width="16" height="16" src="trash0001.png" hidden />
+      <img id="trash2" alt="Trash sprite 2" width="16" height="16" src="trash0002.png" hidden />
+      <img id="trash3" alt="Trash sprite 3" width="16" height="16" src="trash0003.png" hidden />
       <ReactTooltip />
     </div >
   );

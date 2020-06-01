@@ -95,12 +95,17 @@ const Event = {
 
     async createEvent(roomID, userID, eventType) {
 
-        await pool.query(
-            `INSERT INTO events (room_id, user_id, event_type, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp)`,
+        const res = await pool.query(
+            `INSERT INTO events (room_id, user_id, event_type, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp) RETURNING event_id`,
             [roomID, userID, eventType],
         );
-        
+
+        if (res.rowCount != 1) {
+            return;
+        }
+
         return {
+            eventID: res.rows[0]['event_id'],
             roomID: roomID,
             userID: userID,
             eventType: eventType,

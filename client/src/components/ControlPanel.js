@@ -87,7 +87,7 @@ const ControlPanel = (props) => {
   const canvasRef = useRef(null);
   const canvas = canvasRef.current;
 
-  if (canvas != undefined) {
+  if (canvas) {
 
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientWidth;
@@ -125,7 +125,7 @@ const ControlPanel = (props) => {
 
   return (
     <div className="card">
-      <div class="card-header">
+      <div className="card-header">
         <h3>World: {props.roomName}</h3>
       </div>
       <div className="card-body">

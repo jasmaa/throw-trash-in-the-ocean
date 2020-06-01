@@ -22,7 +22,7 @@ const HomeScreen = () => {
                             value={roomName.value}
                             onChange={e => setRoomName(e.target.value)}
                             onKeyPress={e => {
-                                if (e.charCode == 13) window.location.href = `/${roomName}`;
+                                if (e.charCode === 13) window.location.href = `/${roomName}`;
                             }}
                             autoFocus
                         />
