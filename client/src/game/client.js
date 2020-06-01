@@ -19,9 +19,10 @@ export default class Client {
         this.updateHandler = updateHandler;
 
         this.socket.on('connect', data => {
+
             this.socket.emit('join', {
-                user_id: this.userID,
-                room_name: this.roomName,
+                userID: this.userID,
+                roomName: this.roomName,
             });
         });
 
@@ -31,36 +32,44 @@ export default class Client {
 
         this.socket.on('join', data => {
 
-            console.log(`Joined ${data['user_id']}!`);
+            console.log(`Joined ${data['userID']}!`);
 
-            this.userID = data['user_id'];
+            this.userID = data['userID'];
             document.cookie = `user_id=${this.userID}`;
         });
 
         this.socket.on('set_handle', data => {
-            this.userHandle = data['user_handle'];
+            this.userHandle = data['userHandle'];
         });
     }
 
     pollute() {
         this.socket.emit('pollute', {
-            user_id: this.userID,
-            room_name: this.roomName,
+            userID: this.userID,
+            roomName: this.roomName,
         });
     }
 
     setUserHandle(userHandle) {
         this.socket.emit('set_handle', {
-            user_id: this.userID,
-            room_name: this.roomName,
-            user_handle: userHandle,
+            userID: this.userID,
+            roomName: this.roomName,
+            userHandle: userHandle,
         });
     }
 
     upgradeClick() {
         this.socket.emit('upgrade_click', {
-            user_id: this.userID,
-            room_name: this.roomName,
+            userID: this.userID,
+            roomName: this.roomName,
         });
+    }
+
+    chat(content) {
+        this.socket.emit('chat', {
+            userID: this.userID,
+            roomName: this.roomName,
+            content: content,
+        })
     }
 }

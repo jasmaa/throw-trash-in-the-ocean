@@ -56,8 +56,8 @@ io.on('connection', client => {
 
         // TODO: validate room name here
 
-        const roomName = data['room_name'];
-        let userID = data['user_id'];
+        const roomName = data['roomName'];
+        let userID = data['userID'];
         let world = worlds[roomName];
 
         client.join(roomName);
@@ -83,11 +83,11 @@ io.on('connection', client => {
 
             // Update client
             client.emit('join', {
-                user_id: player.userID,
-                user_handle: player.userHandle,
+                userID: player.userID,
+                userHandle: player.userHandle,
             });
             client.emit('set_handle', {
-                'user_handle': player.userHandle,
+                userHandle: player.userHandle,
             });
         }
 
@@ -97,8 +97,8 @@ io.on('connection', client => {
 
     client.on('pollute', async data => {
 
-        const userID = data['user_id'];
-        const roomName = data['room_name'];
+        const userID = data['userID'];
+        const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
@@ -145,9 +145,9 @@ io.on('connection', client => {
 
     client.on('set_handle', async data => {
 
-        const userID = data['user_id'];
-        const userHandle = data['user_handle'];
-        const roomName = data['room_name'];
+        const userID = data['userID'];
+        const userHandle = data['userHandle'];
+        const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
@@ -162,7 +162,7 @@ io.on('connection', client => {
 
             // Update client
             client.emit('set_handle', {
-                'user_handle': userHandle,
+                userHandle: userHandle,
             });
             io.in(roomName).emit('sync', world.getState());
         }
@@ -170,8 +170,8 @@ io.on('connection', client => {
 
     client.on('upgrade_click', async data => {
 
-        const userID = data['user_id'];
-        const roomName = data['room_name'];
+        const userID = data['userID'];
+        const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
@@ -196,6 +196,25 @@ io.on('connection', client => {
             io.in(roomName).emit('sync', world.getState());
         }
     });
+
+    client.on('chat', async data => {
+
+        const userID = data['userID'];
+        const userHandle = data['userHandle'];
+        const roomName = data['roomName'];
+        const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
+
+        const content = data['content'];
+
+        if (content.length <= 200) {
+            console.log(content);
+        }
+    })
 });
 
 server.listen(3001, () => console.log("Starting server on 3001..."));
