@@ -5,7 +5,7 @@ const presetProfits = [1, 2, 4, 8, 10, 30, 50, 80, 100, 150];
 const level2profit = level => {
     return level < presetProfits.length
         ? presetProfits[level]
-        : 15 * level;
+        : 20 * level;
 };
 
 const presetCosts = [100, 200, 400, 600, 800, 1200, 1500, 3000, 5000, 10000];

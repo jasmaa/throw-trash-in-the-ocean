@@ -72,11 +72,22 @@ const ControlPanel = (props) => {
     isMouseDown = false;
     clickCooldown = CLICK_COOLDOWN_TIME;
 
-    setParticles(prevState => [...prevState, {
-      x: x,
-      y: y,
-      value: player.powerClickProfit,
-    }]);
+    setParticles(prevState => {
+      if (prevState.length < 20) {
+        return [...prevState, {
+          x: x,
+          y: y,
+          value: player.powerClickProfit,
+        }];
+      } else {
+        prevState.shift();
+        return [...prevState, {
+          x: x,
+          y: y,
+          value: player.powerClickProfit,
+        }];
+      }
+    });
     props.polluteHandler();
   }
 

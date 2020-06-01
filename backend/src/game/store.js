@@ -93,11 +93,11 @@ const Player = {
  */
 const Event = {
 
-    async createEvent(roomID, userID, eventType) {
+    async createEvent(roomID, userID, eventType, content = '') {
 
         const res = await pool.query(
-            `INSERT INTO events (room_id, user_id, event_type, event_timestamp) VALUES ($1, $2, $3, NOW()::timestamp) RETURNING event_id`,
-            [roomID, userID, eventType],
+            `INSERT INTO events (room_id, user_id, event_type, content, event_timestamp) VALUES ($1, $2, $3, $4, NOW()::timestamp) RETURNING event_id`,
+            [roomID, userID, eventType, content],
         );
 
         if (res.rowCount != 1) {
@@ -109,6 +109,7 @@ const Event = {
             roomID: roomID,
             userID: userID,
             eventType: eventType,
+            content: content,
             eventTimestamp: new Date(),
         };
     },
