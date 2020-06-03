@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 let client;
 let noise;
 const mapSize = 500;
+const petSize = 256;
 
 const GameScreen = (props) => {
 
@@ -40,6 +41,7 @@ const GameScreen = (props) => {
                         syncData={syncData}
                         noise={noise}
                         mapSize={mapSize}
+                        petSize={petSize}
 
                         upgradeClickHandler={() => client.upgradeClick()}
                         sendChatHandler={content => client.chat(content)}
