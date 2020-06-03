@@ -72,7 +72,7 @@ io.on('connection', client => {
 
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
-        const pet = await Pet.createOrGet(player.playerID); // Cache these?
+        const pet = await Pet.createOrGet(player.playerID); // Cache?
 
         if (!world.isDead) {
             // Log join
@@ -107,8 +107,7 @@ io.on('connection', client => {
             return;
         }
 
-        const userInfo = await User.createOrGet(userID);
-        const player = await Player.createOrGet(userInfo, world.roomID);
+        const player = world.players[userID];
 
         // Check throttle
         const now = new Date();
@@ -180,8 +179,7 @@ io.on('connection', client => {
             return;
         }
 
-        const userInfo = await User.createOrGet(userID);
-        const player = await Player.createOrGet(userInfo, world.roomID);
+        const player = world.players[userID];
 
         if (player.profit >= level2cost(player.powerClickLevel)) {
 
@@ -228,8 +226,7 @@ io.on('connection', client => {
             return;
         }
 
-        const userInfo = await User.createOrGet(userID);
-        const player = await Player.createOrGet(userInfo, world.roomID);
+        const player = world.players[userID];
         const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
 
         client.emit('sync_pet', pet);
@@ -245,8 +242,7 @@ io.on('connection', client => {
             return;
         }
 
-        const userInfo = await User.createOrGet(userID);
-        const player = await Player.createOrGet(userInfo, world.roomID);
+        const player = world.players[userID];
 
         // Abort if not enough money
         if (player.profit < 100) return;

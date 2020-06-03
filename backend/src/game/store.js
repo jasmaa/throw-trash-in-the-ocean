@@ -57,10 +57,12 @@ const Player = {
         let powerClickLevel = 0;
 
         if (res.rowCount <= 0) {
-            playerID = await pool.query(
-                `INSERT INTO players (user_id, room_id, profit, power_click_level) VALUES ($1, $2, $3, $4) RETURN player_id`,
+            const insertRes = await pool.query(
+                `INSERT INTO players (user_id, room_id, profit, power_click_level) VALUES ($1, $2, $3, $4) RETURNING player_id`,
                 [userID, roomID, 0, 0],
             );
+            playerID = insertRes.rows[0]['player_id'];
+
         } else {
             playerID = res.rows[0]['player_id'];
             currProfit = res.rows[0]['profit'];
