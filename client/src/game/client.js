@@ -7,7 +7,7 @@ import { getCookie } from 'src/utils';
  */
 export default class Client {
 
-    constructor(roomName, { updateHandler }) {
+    constructor(roomName, { updateHandler, petUpdateHandler }) {
 
         console.log(process.env.REACT_APP_BASE_URL)
 
@@ -17,6 +17,7 @@ export default class Client {
         this.userID = getCookie('user_id');
 
         this.updateHandler = updateHandler;
+        this.petUpdateHandler = petUpdateHandler;
 
         this.socket.on('connect', data => {
 
@@ -28,6 +29,10 @@ export default class Client {
 
         this.socket.on('sync', data => {
             this.updateHandler(data);
+        });
+
+        this.socket.on('sync_pet', data => {
+            this.petUpdateHandler(data);
         });
 
         this.socket.on('join', data => {
@@ -70,6 +75,20 @@ export default class Client {
             userID: this.userID,
             roomName: this.roomName,
             content: content,
-        })
+        });
+    }
+
+    syncPet() {
+        this.socket.emit('sync_pet', {
+            userID: this.userID,
+            roomName: this.roomName,
+        });
+    }
+
+    feedPet() {
+        this.socket.emit('feed_pet', {
+            userID: this.userID,
+            roomName: this.roomName,
+        });
     }
 }

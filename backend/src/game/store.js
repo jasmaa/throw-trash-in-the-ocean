@@ -52,20 +52,23 @@ const Player = {
             `SELECT * FROM players WHERE user_id=$1 AND room_id=$2`,
             [userID, roomID],
         );
+        let playerID;
         let currProfit = 0;
         let powerClickLevel = 0;
 
         if (res.rowCount <= 0) {
-            await pool.query(
-                `INSERT INTO players (user_id, room_id, profit, power_click_level) VALUES ($1, $2, $3, $4)`,
+            playerID = await pool.query(
+                `INSERT INTO players (user_id, room_id, profit, power_click_level) VALUES ($1, $2, $3, $4) RETURN player_id`,
                 [userID, roomID, 0, 0],
-            )
+            );
         } else {
+            playerID = res.rows[0]['player_id'];
             currProfit = res.rows[0]['profit'];
             powerClickLevel = res.rows[0]['power_click_level'];
         }
 
         return {
+            playerID: playerID,
             userID: userID,
             userHandle: userHandle,
             profit: currProfit,
@@ -73,18 +76,70 @@ const Player = {
         }
     },
 
-    async updateProfit(userID, roomID, profit) {
+    async updateProfit(playerID, profit) {
         await pool.query(
-            `UPDATE players SET profit=$3 WHERE user_id=$1 AND room_id=$2`,
-            [userID, roomID, profit],
+            `UPDATE players SET profit=$2 WHERE player_id=$1`,
+            [playerID, profit],
         );
     },
 
-    async updateClickLevel(userID, roomID, level) {
+    async updateClickLevel(playerID, level) {
         await pool.query(
-            `UPDATE players SET power_click_level=$3 WHERE user_id=$1 AND room_id=$2`,
-            [userID, roomID, level],
-        )
+            `UPDATE players SET power_click_level=$2 WHERE player_id=$1`,
+            [playerID, level],
+        );
+    },
+}
+
+/**
+ * Pet
+ */
+const Pet = {
+
+    async createOrGet(playerID) {
+
+        const res = await pool.query(
+            `SELECT * FROM pets WHERE player_id=$1`,
+            [playerID],
+        );
+
+        let expiryTimestamp = new Date();
+        let hatType = 0;
+
+        if (res.rowCount <= 0) {
+            await pool.query(
+                `INSERT INTO pets (player_id, expiry_timestamp, hat_type) VALUES ($1, (to_timestamp($2 / 1000.0)), $3)`,
+                [playerID, expiryTimestamp.valueOf(), hatType],
+            )
+        } else {
+            expiryTimestamp = res.rows[0]['expiry_timestamp'];
+            hatType = res.rows[0]['hat_type'];
+        }
+
+        return {
+            expiryTimestamp: expiryTimestamp,
+            hatType: hatType,
+        }
+    },
+
+    async feed(playerID) {
+        const res = await pool.query(
+            `SELECT * FROM pets WHERE player_id=$1`,
+            [playerID],
+        );
+
+        const newExpiry = res.rows[0]['expiry_timestamp'].valueOf() + 3600000; // Extend life by an hour
+
+        await pool.query(
+            `UPDATE pets SET expiry_timestamp=(to_timestamp($2 / 1000.0)) WHERE player_id=$1`,
+            [playerID, newExpiry],
+        );
+
+        return new Date(newExpiry);
+    },
+
+    async revive(playerID) {
+
     },
 }
 
@@ -116,5 +171,6 @@ const Event = {
 module.exports = {
     User: User,
     Player: Player,
+    Pet: Pet,
     Event: Event,
 }

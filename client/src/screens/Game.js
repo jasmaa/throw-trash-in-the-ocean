@@ -16,10 +16,12 @@ const petSize = 256;
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
+    const [pet, setPet] = useState({});
 
     useEffect(() => {
         client = new Client(props.roomName, {
             updateHandler: data => setSyncData(prevState => ({ ...prevState, ...data })),
+            petUpdateHandler: data => setPet(prevState => ({ ...prevState, ...data })),
         });
 
         // Generate map
@@ -39,12 +41,14 @@ const GameScreen = (props) => {
                     <MapPanel
                         userID={client.userID}
                         syncData={syncData}
+                        pet={pet}
                         noise={noise}
                         mapSize={mapSize}
                         petSize={petSize}
 
                         upgradeClickHandler={() => client.upgradeClick()}
                         sendChatHandler={content => client.chat(content)}
+                        feedPetHandler={() => client.feedPet()}
                     />
                 </div>
                 <div className="col-lg-4">

@@ -8,7 +8,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const { World, User, Player, Event } = require('./src/game');
+const { World, User, Player, Pet, Event } = require('./src/game');
 const { level2profit, level2cost } = require('./src/utils');
 
 // === Middlware ===
@@ -72,6 +72,7 @@ io.on('connection', client => {
 
         const userInfo = await User.createOrGet(userID);
         const player = await Player.createOrGet(userInfo, world.roomID);
+        const pet = await Pet.createOrGet(player.playerID); // Cache these?
 
         if (!world.isDead) {
             // Log join
@@ -92,7 +93,7 @@ io.on('connection', client => {
         }
 
         client.emit('sync', world.getState());
-
+        client.emit('sync_pet', pet);
     });
 
     client.on('pollute', async data => {
@@ -134,7 +135,7 @@ io.on('connection', client => {
 
             // Save user profit
             const currProfit = player.profit + level2profit(player.powerClickLevel);
-            await Player.updateProfit(userID, world.roomID, currProfit);
+            await Player.updateProfit(player.playerID, currProfit);
             world.players[userID].profit = currProfit;
         }
 
@@ -185,11 +186,11 @@ io.on('connection', client => {
         if (player.profit >= level2cost(player.powerClickLevel)) {
 
             const currProfit = player.profit - level2cost(player.powerClickLevel);
-            await Player.updateProfit(userID, world.roomID, currProfit);
+            await Player.updateProfit(player.playerID, currProfit);
             world.players[userID].profit = currProfit;
 
             const currClickLevel = player.powerClickLevel + 1;
-            await Player.updateClickLevel(userID, world.roomID, currClickLevel);
+            await Player.updateClickLevel(player.playerID, currClickLevel);
             world.players[userID].powerClickLevel = currClickLevel;
 
             // Update client
@@ -215,7 +216,58 @@ io.on('connection', client => {
             world.events.unshift(chatEvent);
             io.in(roomName).emit('sync', world.getState());
         }
-    })
+    });
+
+    client.on('sync_pet', async data => {
+        const userID = data['userID'];
+        const roomName = data['roomName'];
+        const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
+
+        const userInfo = await User.createOrGet(userID);
+        const player = await Player.createOrGet(userInfo, world.roomID);
+        const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
+
+        client.emit('sync_pet', pet);
+    });
+
+    client.on('feed_pet', async data => {
+        const userID = data['userID'];
+        const roomName = data['roomName'];
+        const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
+
+        const userInfo = await User.createOrGet(userID);
+        const player = await Player.createOrGet(userInfo, world.roomID);
+
+        // Abort if not enough money
+        if (player.profit < 100) return;
+
+        const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
+
+        // Abort if not alive
+        // TEMP: disable for now
+        // if (pet.expiryTimestamp < Date.now()) return;
+
+        const currProfit = player.profit - 100;
+        await Player.updateProfit(player.playerID, currProfit);
+        world.players[userID].profit = currProfit;
+
+        const newExpiry = await Pet.feed(player.playerID);
+
+        client.emit('sync_pet', {
+            expiryTimestamp: newExpiry,
+        });
+        io.in(roomName).emit('sync', world.getState());
+    });
 });
 
 server.listen(3001, () => console.log("Starting server on 3001..."));

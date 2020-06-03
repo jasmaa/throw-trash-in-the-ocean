@@ -14,8 +14,13 @@ CREATE TABLE players (
     user_id VARCHAR(255) NOT NULL,
     room_id INTEGER NOT NULL,
     profit INTEGER,
-    power_click_level INTEGER,
-    estate_level INTEGER
+    power_click_level INTEGER
+);
+
+CREATE TABLE pets (
+    player_id INTEGER PRIMARY KEY,
+    expiry_timestamp TIMESTAMP WITHOUT TIME ZONE,
+    hat_type INTEGER
 );
 
 CREATE TABLE users (

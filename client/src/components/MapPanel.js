@@ -56,16 +56,42 @@ const MapPanel = (props) => {
               <Pet
                 petSize={props.petSize}
               />
+              {JSON.stringify(props.pet)}
             </div>
 
             <ul className="list-group">
               <li className="list-group-item d-flex justify-content-between align-items-center">
-                <span data-tip={`+$${player.powerClickProfit} per click`}>Power Click - Lv. {player.powerClickLevel}</span>
-                <button className="badge badge-primary badge-pill" onClick={props.upgradeClickHandler}>{player.powerClickCost}</button>
+                <span data-tip={`Cost: ${player.powerClickCost}`}>
+                  Power Click - Lv. {player.powerClickLevel + 1}
+                </span>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={props.upgradeClickHandler}
+                  disabled={player.profit < player.powerClickCost}
+                >
+                  Buy
+                </button>
               </li>
               <li className="list-group-item d-flex justify-content-between align-items-center">
-                Estate - None
-                <span className="badge badge-primary badge-pill">+</span>
+                <span data-tip={`Cost: `}>
+                  Feed Pet
+                </span>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={props.feedPetHandler}
+                >
+                  Buy
+                </button>
+              </li>
+              <li className="list-group-item d-flex justify-content-between align-items-center">
+                <span data-tip={`Cost: `}>
+                  Revive Pet
+                </span>
+                <button
+                  className="btn btn-primary btn-sm"
+                >
+                  Buy
+                </button>
               </li>
             </ul>
           </div>
