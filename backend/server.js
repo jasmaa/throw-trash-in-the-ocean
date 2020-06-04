@@ -55,12 +55,15 @@ setInterval(async () => {
 // Socket handlers
 io.on('connection', client => {
 
+    // TODO: delete players from cached room on disconnect
+
     client.on('join', async data => {
 
         // TODO: validate room name here
 
         const roomName = data['roomName'];
         let userID = data['userID'];
+        let userSecret = data['userSecret'];
         let world = worlds[roomName];
 
         client.join(roomName);
@@ -73,7 +76,16 @@ io.on('connection', client => {
             worlds[roomName] = world;
         }
 
-        const userInfo = await User.createOrGet(userID);
+        let userInfo = await User.get(userID);
+
+        // Create new user or abort if cannot validate
+        if (!userInfo) {
+            userInfo = await User.create();
+        } else if (userSecret !== userInfo.userSecret) {
+            client.leave(roomName);
+            return;
+        }
+
         const player = await Player.createOrGet(userInfo, world.roomID);
         const pet = await Pet.createOrGet(player.playerID); // Cache?
 
@@ -83,11 +95,13 @@ io.on('connection', client => {
 
             // Update cache
             world.players[player.userID] = player;
+            world.userSecrets[player.userID] = userInfo.userSecret;
             world.events.unshift(joinEvent);
 
             // Update client
             client.emit('join', {
                 userID: player.userID,
+                userSecret: userInfo.userSecret,
                 userHandle: player.userHandle,
             });
             client.emit('set_handle', {
@@ -108,13 +122,15 @@ io.on('connection', client => {
     client.on('pollute', async data => {
 
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const player = world.players[userID];
 
@@ -155,14 +171,16 @@ io.on('connection', client => {
     client.on('set_handle', async data => {
 
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const userHandle = data['userHandle'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         if (userHandle.length <= 30) {
             // Update user
@@ -180,13 +198,15 @@ io.on('connection', client => {
     client.on('upgrade_click', async data => {
 
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const player = world.players[userID];
 
@@ -208,13 +228,15 @@ io.on('connection', client => {
     client.on('chat', async data => {
 
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const content = data['content'];
 
@@ -227,13 +249,15 @@ io.on('connection', client => {
 
     client.on('sync_pet', async data => {
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const player = world.players[userID];
         const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
@@ -243,13 +267,15 @@ io.on('connection', client => {
 
     client.on('feed_pet', async data => {
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const player = world.players[userID];
 
@@ -280,13 +306,15 @@ io.on('connection', client => {
 
     client.on('revive_pet', async data => {
         const userID = data['userID'];
+        const userSecret = data['userSecret'];
         const roomName = data['roomName'];
         const world = worlds[roomName];
 
         // Abort if world does not exist or is dead
-        if (!world || world.isDead) {
-            return;
-        }
+        if (!world || world.isDead) return;
+
+        // User validation
+        if (userSecret !== world.userSecrets[userID]) return;
 
         const player = world.players[userID];
 

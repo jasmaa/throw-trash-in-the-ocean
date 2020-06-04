@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as crypto from 'crypto';
 
 import DeadScreen from 'src/screens/Dead';
 import ControlPanel from 'src/components/ControlPanel';
@@ -8,7 +9,6 @@ import EventPanel from 'src/components/EventPanel';
 import Loading from 'src/components/Loading';
 import Client from 'src/game/client';
 import { generatePerlin } from 'src/utils';
-import * as crypto from 'crypto';
 
 let client;
 let noise;

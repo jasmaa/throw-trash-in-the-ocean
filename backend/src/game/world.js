@@ -18,6 +18,7 @@ class World {
         this.totalPollution = 0;
         this.isDead = false;
         this.players = {};
+        this.userSecrets = {};
         this.events = [];
         this.trash = [];
     }

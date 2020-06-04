@@ -15,6 +15,7 @@ export default class Client {
         this.socket = io.connect(`http://${baseURL}:3001`);
         this.roomName = roomName;
         this.userID = getCookie('user_id');
+        this.userSecret = getCookie('user_secret');
 
         this.updateHandler = updateHandler;
         this.petUpdateHandler = petUpdateHandler;
@@ -23,6 +24,7 @@ export default class Client {
 
             this.socket.emit('join', {
                 userID: this.userID,
+                userSecret: this.userSecret,
                 roomName: this.roomName,
             });
         });
@@ -40,7 +42,9 @@ export default class Client {
             console.log(`Joined ${data['userID']}!`);
 
             this.userID = data['userID'];
+            this.userSecret = data['userSecret'];
             document.cookie = `user_id=${this.userID}`;
+            document.cookie = `user_secret=${this.userSecret}`;
         });
 
         this.socket.on('set_handle', data => {
@@ -51,6 +55,7 @@ export default class Client {
     pollute() {
         this.socket.emit('pollute', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
         });
     }
@@ -58,6 +63,7 @@ export default class Client {
     setUserHandle(userHandle) {
         this.socket.emit('set_handle', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
             userHandle: userHandle,
         });
@@ -66,6 +72,7 @@ export default class Client {
     upgradeClick() {
         this.socket.emit('upgrade_click', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
         });
     }
@@ -73,6 +80,7 @@ export default class Client {
     chat(content) {
         this.socket.emit('chat', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
             content: content,
         });
@@ -81,6 +89,7 @@ export default class Client {
     syncPet() {
         this.socket.emit('sync_pet', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
         });
     }
@@ -88,6 +97,7 @@ export default class Client {
     feedPet() {
         this.socket.emit('feed_pet', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
         });
     }
@@ -95,6 +105,7 @@ export default class Client {
     revivePet() {
         this.socket.emit('revive_pet', {
             userID: this.userID,
+            userSecret: this.userSecret,
             roomName: this.roomName,
         });
     }

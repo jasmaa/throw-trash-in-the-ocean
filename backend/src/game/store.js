@@ -9,25 +9,34 @@ const { getRandomValue, getRandomName } = require('../utils');
  */
 const User = {
 
-    async createOrGet(userID) {
-        const res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
-        let userHandle;
+    async create() {
 
-        if (res.rowCount <= 0) {
-            userID = getRandomValue(30);
-            userHandle = getRandomName();
+        const userID = getRandomValue(30);
+        const userSecret = getRandomValue(30);
+        const userHandle = getRandomName();
 
-            await pool.query(
-                `INSERT INTO users (user_id, user_handle) VALUES ($1, $2)`,
-                [userID, userHandle],
-            );
-        } else {
-            userHandle = res.rows[0]['user_handle']
-        }
+        await pool.query(
+            `INSERT INTO users (user_id, user_secret, user_handle) VALUES ($1, $2, $3)`,
+            [userID, userSecret, userHandle],
+        );
 
         return {
             userID: userID,
+            userSecret: userSecret,
             userHandle: userHandle,
+        }
+    },
+
+    async get(userID) {
+        const res = await pool.query(`SELECT * FROM users WHERE user_id=$1`, [userID]);
+        if (res.rowCount <= 0) {
+            return null;
+        } else {
+            return {
+                userID: res.rows[0]['user_id'],
+                userSecret: res.rows[0]['user_secret'],
+                userHandle: res.rows[0]['user_handle'],
+            }
         }
     },
 
@@ -99,8 +108,8 @@ const Player = {
 const Pet = {
 
     // TODO: make these funcs??
-    FEED_RESTORE_TIME: 30000, // 30s
-    MAX_LIFETIME: 5 * 60000, // 5min
+    FEED_RESTORE_TIME: 3600000, // 1hr
+    MAX_LIFETIME: 24 * 3600000, // 24hr
 
     async createOrGet(playerID) {
 
@@ -109,7 +118,7 @@ const Pet = {
             [playerID],
         );
 
-        let expiryTimestamp = new Date();
+        let expiryTimestamp = Date.now() + this.MAX_LIFETIME;
         let hatType = 0;
 
         if (res.rowCount <= 0) {
@@ -147,7 +156,7 @@ const Pet = {
         return new Date(newExpiry);
     },
 
-    async revive(playerID, maxLifeTime) {
+    async revive(playerID) {
         const newExpiry = Date.now() + this.MAX_LIFETIME;
 
         await pool.query(

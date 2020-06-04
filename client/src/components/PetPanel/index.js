@@ -38,29 +38,32 @@ const PetPanel = (props) => {
 
                 <ul className="list-group">
                     <li className="list-group-item d-flex justify-content-between align-items-center">
-                        <span data-tip={`Cost: ${player.powerClickCost}`}>
+                        <span>
                             Power Click - Lv. {player.powerClickLevel + 1}
                         </span>
                         <button
                             className={`btn btn-sm ${isPowerClickUpgradeDisabled ? 'btn-secondary' : 'btn-primary'}`}
                             onClick={props.upgradeClickHandler}
                             disabled={isPowerClickUpgradeDisabled}
+                            data-tip={`Cost: $${player.powerClickCost}`}
                         >Buy</button>
                     </li>
                     <li className="list-group-item d-flex justify-content-between align-items-center">
-                        <span data-tip={`Cost: ${props.pet.feedCost}`}>Feed Pet</span>
+                        <span>Feed Pet</span>
                         <button
                             className={`btn btn-sm ${isPetFeedDisabled ? 'btn-secondary' : 'btn-primary'}`}
                             onClick={props.feedPetHandler}
                             disabled={isPetFeedDisabled}
+                            data-tip={`Cost: $${props.pet.feedCost}`}
                         >Buy</button>
                     </li>
                     <li className="list-group-item d-flex justify-content-between align-items-center">
-                        <span data-tip={`Cost: ${props.pet.reviveCost}`}>Revive Pet</span>
+                        <span>Revive Pet</span>
                         <button
                             className={`btn btn-sm ${isPetReviveDisabled ? 'btn-secondary' : 'btn-primary'}`}
                             onClick={props.revivePetHandler}
                             disabled={isPetReviveDisabled}
+                            data-tip={`Cost: $${props.pet.reviveCost}`}
                         >Buy</button>
                     </li>
                 </ul>

@@ -25,6 +25,7 @@ CREATE TABLE pets (
 
 CREATE TABLE users (
     user_id VARCHAR(255) PRIMARY KEY,
+    user_secret VARCHAR(255) NOT NULL,
     user_handle VARCHAR(255) NOT NULL
 );
 
