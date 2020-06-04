@@ -18,6 +18,10 @@ const GameScreen = (props) => {
     const [syncData, setSyncData] = useState({});
     const [pet, setPet] = useState({
         expiryTimestamp: new Date(),
+        feedCost: -1,
+        reviveCost: -1,
+        feedRestoreTime: -1,
+        maxLifetime: -1,
         hatType: 0,
     });
 
@@ -52,6 +56,7 @@ const GameScreen = (props) => {
                         upgradeClickHandler={() => client.upgradeClick()}
                         sendChatHandler={content => client.chat(content)}
                         feedPetHandler={() => client.feedPet()}
+                        revivePetHandler={() => client.revivePet()}
                     />
                 </div>
                 <div className="col-lg-4">

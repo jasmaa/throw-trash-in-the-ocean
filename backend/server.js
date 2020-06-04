@@ -20,6 +20,9 @@ app.use(cors());
 const THROTTLE_TIME = 100;
 const UPDATE_TIME = 5000;
 
+const PET_FEED_COST = 100;
+const PET_REVIVE_COST = 500;
+
 const activeRooms = new Set();
 const worlds = {};
 
@@ -93,7 +96,13 @@ io.on('connection', client => {
         }
 
         client.emit('sync', world.getState());
-        client.emit('sync_pet', pet);
+        client.emit('sync_pet', {
+            ...pet,
+            feedCost: PET_FEED_COST,
+            reviveCost: PET_REVIVE_COST,
+            feedRestoreTime: Pet.FEED_RESTORE_TIME,
+            maxLifetime: Pet.MAX_LIFETIME,
+        });
     });
 
     client.on('pollute', async data => {
@@ -245,22 +254,63 @@ io.on('connection', client => {
         const player = world.players[userID];
 
         // Abort if not enough money
-        if (player.profit < 100) return;
+        if (player.profit < PET_FEED_COST) return;
 
         const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
 
-        // Abort if not alive
-        // TEMP: disable for now
-        // if (pet.expiryTimestamp < Date.now()) return;
+        // Abort if alive
+        if (pet.expiryTimestamp <= Date.now()) return;
 
-        const currProfit = player.profit - 100;
+        const currProfit = player.profit - PET_FEED_COST;
         await Player.updateProfit(player.playerID, currProfit);
         world.players[userID].profit = currProfit;
 
         const newExpiry = await Pet.feed(player.playerID);
+        pet.expiryTimestamp = newExpiry;
 
         client.emit('sync_pet', {
-            expiryTimestamp: newExpiry,
+            ...pet,
+            feedCost: PET_FEED_COST,
+            reviveCost: PET_REVIVE_COST,
+            feedRestoreTime: Pet.FEED_RESTORE_TIME,
+            maxLifetime: Pet.MAX_LIFETIME,
+        });
+        io.in(roomName).emit('sync', world.getState());
+    });
+
+    client.on('revive_pet', async data => {
+        const userID = data['userID'];
+        const roomName = data['roomName'];
+        const world = worlds[roomName];
+
+        // Abort if world does not exist or is dead
+        if (!world || world.isDead) {
+            return;
+        }
+
+        const player = world.players[userID];
+
+        // Abort if not enough money
+        if (player.profit < PET_REVIVE_COST) return;
+
+        const pet = await Pet.createOrGet(player.playerID); // cache pet on join??
+
+        // Abort if not alive
+        if (pet.expiryTimestamp > Date.now()) return;
+
+        const currProfit = player.profit - PET_REVIVE_COST;
+        await Player.updateProfit(player.playerID, currProfit);
+        world.players[userID].profit = currProfit;
+
+        const newExpiry = await Pet.revive(player.playerID);
+        pet.expiryTimestamp = newExpiry;
+
+        client.emit('sync_pet', {
+            ...pet,
+            feedCost: PET_FEED_COST,
+            reviveCost: PET_REVIVE_COST,
+            feedRestoreTime: Pet.FEED_RESTORE_TIME,
+            maxLifetime: Pet.MAX_LIFETIME,
         });
         io.in(roomName).emit('sync', world.getState());
     });

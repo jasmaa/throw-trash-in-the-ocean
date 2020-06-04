@@ -91,4 +91,11 @@ export default class Client {
             roomName: this.roomName,
         });
     }
+
+    revivePet() {
+        this.socket.emit('revive_pet', {
+            userID: this.userID,
+            roomName: this.roomName,
+        });
+    }
 }

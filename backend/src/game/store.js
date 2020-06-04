@@ -98,6 +98,10 @@ const Player = {
  */
 const Pet = {
 
+    // TODO: make these funcs??
+    FEED_RESTORE_TIME: 30000, // 30s
+    MAX_LIFETIME: 5 * 60000, // 5min
+
     async createOrGet(playerID) {
 
         const res = await pool.query(
@@ -131,8 +135,8 @@ const Pet = {
         );
 
         const newExpiry = Math.min(
-            res.rows[0]['expiry_timestamp'].valueOf() + 30000, // TEMP: feed restores 30s
-            Date.now() + 5 * 60000, // TEMP: max life is 1min
+            res.rows[0]['expiry_timestamp'].valueOf() + this.FEED_RESTORE_TIME,
+            Date.now() + this.MAX_LIFETIME,
         );
 
         await pool.query(
@@ -143,8 +147,15 @@ const Pet = {
         return new Date(newExpiry);
     },
 
-    async revive(playerID) {
+    async revive(playerID, maxLifeTime) {
+        const newExpiry = Date.now() + this.MAX_LIFETIME;
 
+        await pool.query(
+            `UPDATE pets SET expiry_timestamp=(to_timestamp($2 / 1000.0)) WHERE player_id=$1`,
+            [playerID, newExpiry],
+        );
+
+        return new Date(newExpiry);
     },
 }
 
