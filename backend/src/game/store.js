@@ -130,7 +130,10 @@ const Pet = {
             [playerID],
         );
 
-        const newExpiry = res.rows[0]['expiry_timestamp'].valueOf() + 3600000; // Extend life by an hour
+        const newExpiry = Math.min(
+            res.rows[0]['expiry_timestamp'].valueOf() + 30000, // TEMP: feed restores 30s
+            Date.now() + 5 * 60000, // TEMP: max life is 1min
+        );
 
         await pool.query(
             `UPDATE pets SET expiry_timestamp=(to_timestamp($2 / 1000.0)) WHERE player_id=$1`,

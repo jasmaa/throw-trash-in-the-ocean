@@ -16,7 +16,10 @@ const petSize = 256;
 const GameScreen = (props) => {
 
     const [syncData, setSyncData] = useState({});
-    const [pet, setPet] = useState({});
+    const [pet, setPet] = useState({
+        expiryTimestamp: new Date(),
+        hatType: 0,
+    });
 
     useEffect(() => {
         client = new Client(props.roomName, {

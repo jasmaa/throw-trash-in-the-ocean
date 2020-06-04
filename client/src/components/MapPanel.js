@@ -26,10 +26,12 @@ const MapPanel = (props) => {
       ? 1
       : 2;
 
+  // NOTE: this gets re-rendered bc of world sync, also do pet sync??
+  const petProgress = 100 * (new Date(props.pet.expiryTimestamp).valueOf() - Date.now()) / (5 * 60000);
+
   return (
     <div className="card">
       <div className="card-body">
-
         <div className="progress m-3">
           <div
             className="progress-bar"
@@ -52,11 +54,22 @@ const MapPanel = (props) => {
           </div>
 
           <div className="col d-flex flex-column justify-content-between">
-            <div className="d-flex justify-content-center mb-3">
-              <Pet
-                petSize={props.petSize}
-              />
-              {JSON.stringify(props.pet)}
+
+            <div>
+              <div className="d-flex justify-content-center mb-3">
+                <Pet
+                  petSize={props.petSize}
+                />
+              </div>
+              <div className="progress m-3">
+                <div
+                  className="progress-bar"
+                  role="progressbar"
+                  style={{
+                    width: `${petProgress}%`,
+                  }}>
+                </div>
+              </div>
             </div>
 
             <ul className="list-group">
