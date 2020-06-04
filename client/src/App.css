@@ -49,6 +49,7 @@
   color: white;
   border-color: silver;
   background-color: rgba(0, 0, 0, 0.4);
+  height: 100%;
 }
 .card-header {
   color: white;

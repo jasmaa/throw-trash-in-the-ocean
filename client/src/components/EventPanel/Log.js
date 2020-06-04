@@ -1,7 +1,7 @@
 import React from 'react';
 import * as moment from 'moment';
 
-const MapPanel = (props) => {
+const Log = (props) => {
 
     const renderEvents = () => {
 
@@ -56,4 +56,4 @@ const MapPanel = (props) => {
 
 }
 
-export default MapPanel;
+export default Log;

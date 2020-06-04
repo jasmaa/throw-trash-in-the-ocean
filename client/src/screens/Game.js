@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import DeadScreen from 'src/screens/Dead';
 import ControlPanel from 'src/components/ControlPanel';
 import MapPanel from 'src/components/MapPanel';
+import PetPanel from 'src/components/PetPanel';
+import EventPanel from 'src/components/EventPanel';
 import Loading from 'src/components/Loading';
 import Client from 'src/game/client';
 import { generatePerlin } from 'src/utils';
@@ -45,19 +47,38 @@ const GameScreen = (props) => {
         <div className="container-fluid p-5">
             <div className="row">
                 <div className="col-lg-8">
-                    <MapPanel
-                        userID={client.userID}
-                        syncData={syncData}
-                        pet={pet}
-                        noise={noise}
-                        mapSize={mapSize}
-                        petSize={petSize}
+                    <div className="row">
+                        
+                        <div className="col-lg-4">
+                            <PetPanel
+                                petSize={petSize}
+                                pet={pet}
 
-                        upgradeClickHandler={() => client.upgradeClick()}
-                        sendChatHandler={content => client.chat(content)}
-                        feedPetHandler={() => client.feedPet()}
-                        revivePetHandler={() => client.revivePet()}
-                    />
+                                userID={client.userID}
+                                syncData={syncData}
+                                upgradeClickHandler={() => client.upgradeClick()}
+                                feedPetHandler={() => client.feedPet()}
+                                revivePetHandler={() => client.revivePet()}
+                            />
+                        </div>
+                        <div className="col-lg-8">
+                            <MapPanel
+                                syncData={syncData}
+                                noise={noise}
+                                mapSize={mapSize}
+                            />
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-lg-12">
+                            <EventPanel
+                                userID={client.userID}
+                                syncData={syncData}
+
+                                sendChatHandler={content => client.chat(content)}
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div className="col-lg-4">
                     <ControlPanel
@@ -71,7 +92,7 @@ const GameScreen = (props) => {
                     />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

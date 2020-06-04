@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ControlPanel = (props) => {
+const Scoreboard = (props) => {
 
     if (props.players === undefined) return null;
 
@@ -32,4 +32,4 @@ const ControlPanel = (props) => {
     );
 }
 
-export default ControlPanel;
+export default Scoreboard;

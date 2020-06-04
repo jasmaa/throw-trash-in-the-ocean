@@ -25,6 +25,7 @@ const Pet = props => {
     const canvasRef = useRef(null);
     const canvas = canvasRef.current;
     if (canvas) {
+
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, props.petSize, props.petSize);
@@ -35,6 +36,8 @@ const Pet = props => {
                 break;
             case 1:
                 ctx.drawImage(document.getElementById("sakura1"), 0, 0);
+                break;
+            default:
                 break;
         }
     }

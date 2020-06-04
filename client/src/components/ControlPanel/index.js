@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDebounce } from 'react-use';
 
-import Scoreboard from 'src/components/Scoreboard';
+import Scoreboard from './Scoreboard';
 import { fade } from 'src/utils';
 
 const UPDATE_TIME = 10;
