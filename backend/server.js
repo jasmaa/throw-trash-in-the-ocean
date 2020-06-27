@@ -18,7 +18,7 @@ app.use(cors());
 
 // === Game ===
 const THROTTLE_TIME = 100;
-const UPDATE_TIME = 5000;
+const UPDATE_TIME = 1000;
 
 const PET_FEED_COST = 100;
 const PET_REVIVE_COST = 500;
