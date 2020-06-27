@@ -247,6 +247,7 @@ io.on('connection', client => {
         }
     });
 
+    /*
     client.on('sync_pet', async data => {
         const userID = data['userID'];
         const userSecret = data['userSecret'];
@@ -342,6 +343,7 @@ io.on('connection', client => {
         });
         io.in(roomName).emit('sync', world.getState());
     });
+    */
 });
 
 server.listen(3001, () => console.log("Starting server on 3001..."));

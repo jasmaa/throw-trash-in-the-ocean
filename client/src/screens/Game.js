@@ -5,6 +5,7 @@ import DeadScreen from 'src/screens/Dead';
 import ControlPanel from 'src/components/ControlPanel';
 import MapPanel from 'src/components/MapPanel';
 import PetPanel from 'src/components/PetPanel';
+import UpgradesPanel from 'src/components/UpgradesPanel';
 import EventPanel from 'src/components/EventPanel';
 import Loading from 'src/components/Loading';
 import Client from 'src/game/client';
@@ -48,8 +49,14 @@ const GameScreen = (props) => {
             <div className="row">
                 <div className="col-lg-8">
                     <div className="row">
-                        
+
                         <div className="col-lg-4">
+                            <UpgradesPanel
+                                userID={client.userID}
+                                syncData={syncData}
+                                upgradeClickHandler={() => client.upgradeClick()}
+                            />
+                            {/*
                             <PetPanel
                                 petSize={petSize}
                                 pet={pet}
@@ -60,6 +67,7 @@ const GameScreen = (props) => {
                                 feedPetHandler={() => client.feedPet()}
                                 revivePetHandler={() => client.revivePet()}
                             />
+                            */}
                         </div>
                         <div className="col-lg-8">
                             <MapPanel
